@@ -7,7 +7,7 @@ import { numberFormat } from "../../utils/number";
 const HistoryCard = () => {
   const token = useEcomStore((state) => state.token);
   const [orders, setOrders] = useState([]);
-  const [trackingInfo, setTrackingInfo] = useState({}); // เพิ่ม state สำหรับ trackingNumber และ shippingCompany
+  const [trackingInfo, setTrackingInfo] = useState({}); // เพิ่ม state สำหรับ trackingNumber, shippingCompany, address และ phone
 
   useEffect(() => {
     hdlGetOrders(token);
@@ -19,7 +19,7 @@ const HistoryCard = () => {
       .then((res) => {
         setOrders(res.data.orders);
         res.data.orders.forEach((order) => {
-          // เรียกฟังก์ชันเพื่อดึงเลขพัสดุ
+          // เรียกฟังก์ชันเพื่อดึงเลขพัสดุและข้อมูลที่อยู่ เบอร์โทร
           fetchTrackingInfo(order.id);
         });
       })
@@ -28,7 +28,7 @@ const HistoryCard = () => {
       });
   };
 
-  // ฟังก์ชันดึงเลขพัสดุและบริษัทขนส่ง
+  // ฟังก์ชันดึงเลขพัสดุ, บริษัทขนส่ง, ที่อยู่ และเบอร์โทร
   const fetchTrackingInfo = async (orderId) => {
     try {
       const res = await getOrderTracking(token, orderId);
@@ -37,6 +37,9 @@ const HistoryCard = () => {
         [orderId]: {
           trackingNumber: res.data.trackingNumber, // เก็บเลขพัสดุตาม orderId
           shippingCompany: res.data.shippingCompany, // เก็บบริษัทขนส่งตาม orderId
+          address: res.data.address, // เก็บที่อยู่
+          phone: res.data.phone, // เก็บเบอร์โทร
+          name: res.data.name, // เก็บชื่อผู้สั่งซื้อ
         },
       }));
     } catch (error) {
@@ -114,12 +117,15 @@ const HistoryCard = () => {
                   <p>{numberFormat(item.cartTotal)}</p>
                 </div>
               </div>
-              {/* Display Tracking Number and Shipping Company */}
+              {/* Display Tracking Number, Shipping Company, Address, Phone, and User Name */}
               <div>
                 {trackingInfo[item.id] ? (
                   <div>
                     <p>📦 Tracking: {trackingInfo[item.id].trackingNumber}</p>
                     <p>🚚 บริษัทขนส่ง: {trackingInfo[item.id].shippingCompany}</p>
+                    <p>🏠 ที่อยู่: {trackingInfo[item.id].address}</p>
+                    <p>📞 เบอร์โทร: {trackingInfo[item.id].phone}</p>
+                    <p>👤 ชื่อผู้สั่งซื้อ: {trackingInfo[item.id].name}</p> {/* แสดงชื่อผู้สั่งซื้อ */}
                   </div>
                 ) : (
                   <p>📦 กำลังโหลดเลขพัสดุ...</p>

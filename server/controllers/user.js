@@ -425,21 +425,26 @@ exports.getOrderTracking = async (req, res) => {
     // ค้นหาคำสั่งซื้อพร้อมรายละเอียด
     const order = await prisma.order.findFirst({
       where: { id: Number(orderId), orderedById: userId },
-      include: { orderDetail: true } // ต้อง include orderDetail เพื่อดึงข้อมูลที่เกี่ยวข้อง
+      include: { 
+        orderDetail: true, 
+        orderedBy: true // เพิ่มการดึงข้อมูลผู้ที่สั่งซื้อ เช่น ที่อยู่, เบอร์โทร, ชื่อ
+      }
     });
 
     if (!order) {
       return res.status(404).json({ message: "ไม่พบคำสั่งซื้อ" });
     }
 
-    // ส่งข้อมูล trackingNumber และ shippingCompany
+    // ส่งข้อมูล trackingNumber, shippingCompany, address, phone และ name ของผู้สั่งซื้อ
     res.json({
       trackingNumber: order.orderDetail?.trackingNumber || "ยังไม่มีหมายเลข Tracking",
-      shippingCompany: order.orderDetail?.shippingCompany || "ยังไม่มีบริษัทขนส่ง"
+      shippingCompany: order.orderDetail?.shippingCompany || "ยังไม่มีบริษัทขนส่ง",
+      address: order.orderedBy?.address || "ยังไม่มีที่อยู่",
+      phone: order.orderedBy?.phone || "ยังไม่มีเบอร์โทร",
+      name: order.orderedBy?.name || "ยังไม่มีชื่อผู้สั่งซื้อ" // เพิ่มชื่อผู้สั่งซื้อ
     });
   } catch (err) {
     console.log("❌ Error in getOrderTracking:", err);
     res.status(500).json({ message: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์" });
   }
 };
-
