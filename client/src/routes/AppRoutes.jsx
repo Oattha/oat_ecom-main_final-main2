@@ -21,6 +21,7 @@ import ProtectRouteAdmin from './ProtectRouteAdmin'
 import EditProduct from '../pages/admin/EditProduct'
 import Payment from '../pages/user/Payment'
 import ManageOrders from '../pages/admin/ManageOrders'
+import Profile from '../pages/user/Profile' // ✅ เพิ่ม import Profile
 const router = createBrowserRouter([
     {
         path: '/',
@@ -54,6 +55,8 @@ const router = createBrowserRouter([
             { index: true, element: <HomeUser /> },
             { path: 'payment', element: <Payment /> },
             { path: 'history', element: <History /> },
+            { path: 'profile', element: <Profile /> },
+            
         ]
     }
 
