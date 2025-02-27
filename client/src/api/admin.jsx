@@ -50,13 +50,15 @@ export const changeUserRole = async (token, value) => {
 };
 
 // ฟังก์ชันอัปเดตเลขพัสดุ (Tracking Number)
-export const updateTrackingNumber = (token, orderId, trackingNumber) => {
+// ฟังก์ชันอัปเดตเลขพัสดุ (Tracking Number)
+export const updateTrackingNumber = (token, orderId, trackingNumber, shippingCompany) => {
   return axios.post(
-    `http://localhost:5001/api/orders/${orderId}/tracking`,
-    { trackingNumber },
+    `http://localhost:5001/api/admin/orders/${orderId}/tracking`,
+    { trackingNumber, shippingCompany },
     { headers: { Authorization: `Bearer ${token}` } }
   );
 };
+
 
 // ✅ ฟังก์ชันดึงรายละเอียดออเดอร์ (แก้ให้สมบูรณ์)
 export const getOrderDetail = async (token, orderId) => {

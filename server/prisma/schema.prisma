@@ -60,8 +60,19 @@ model Order {
   amount          Int
   status          String
   currentcy       String
-  trackingNumber  String?          // เก็บเลขพัสดุ
+  orderDetail     OrderDetail?     // ✅ ไม่ต้องใส่ @relation, Prisma เข้าใจเอง
 }
+
+model OrderDetail {
+  id              Int     @id @default(autoincrement())
+  trackingNumber  String?  
+  shippingCompany String?  
+  orderId         Int     @unique @map("order_id") // ✅ ต้องมี @unique เพราะเป็น 1:1
+  order           Order   @relation(fields: [orderId], references: [id])
+}
+
+
+
 
 model ProductOnOrder {
   id        Int     @id @default(autoincrement())
