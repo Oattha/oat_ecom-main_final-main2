@@ -1,23 +1,19 @@
 import axios from "axios";
 
-// http://localhost:5001/api/admin/orders
-
+// ฟังก์ชันดึงข้อมูลออเดอร์ทั้งหมด
 export const getOrdersAdmin = async (token) => {
-  // code body
   return axios.get("http://localhost:5001/api/admin/orders", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 };
+
+// ฟังก์ชันเปลี่ยนสถานะออเดอร์
 export const changeOrderStatus = async (token, orderId, orderStatus) => {
-  // code body
   return axios.put(
     "http://localhost:5001/api/admin/order-status",
-    {
-      orderId,
-      orderStatus,
-    },
+    { orderId, orderStatus },
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -26,9 +22,8 @@ export const changeOrderStatus = async (token, orderId, orderStatus) => {
   );
 };
 
-
+// ฟังก์ชันดึงข้อมูลผู้ใช้ทั้งหมด
 export const getListAllUsers = async (token) => {
-  // code body
   return axios.get("http://localhost:5001/api/users", {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -36,28 +31,38 @@ export const getListAllUsers = async (token) => {
   });
 };
 
-export const changeUserStatus = async (token,value) => {
-  // code body
-  return axios.post("http://localhost:5001/api/change-status",value, {
+// ฟังก์ชันเปลี่ยนสถานะผู้ใช้
+export const changeUserStatus = async (token, value) => {
+  return axios.post("http://localhost:5001/api/change-status", value, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 };
 
-export const changeUserRole = async (token,value) => {
-  // code body
-  return axios.post("http://localhost:5001/api/change-role",value, {
+// ฟังก์ชันเปลี่ยนบทบาทผู้ใช้
+export const changeUserRole = async (token, value) => {
+  return axios.post("http://localhost:5001/api/change-role", value, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 };
 
+// ฟังก์ชันอัปเดตเลขพัสดุ (Tracking Number)
 export const updateTrackingNumber = (token, orderId, trackingNumber) => {
   return axios.post(
-    `/api/orders/${orderId}/tracking`,
+    `http://localhost:5001/api/orders/${orderId}/tracking`,
     { trackingNumber },
     { headers: { Authorization: `Bearer ${token}` } }
   );
+};
+
+// ✅ ฟังก์ชันดึงรายละเอียดออเดอร์ (แก้ให้สมบูรณ์)
+export const getOrderDetail = async (token, orderId) => {
+  return axios.get(`http://localhost:5001/api/admin/orders/${orderId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

@@ -22,6 +22,9 @@ import EditProduct from '../pages/admin/EditProduct'
 import Payment from '../pages/user/Payment'
 import ManageOrders from '../pages/admin/ManageOrders'
 import Profile from '../pages/user/Profile' // ✅ เพิ่ม import Profile
+import { OrderDetail } from '../components/admin/OrderDetail';
+
+
 const router = createBrowserRouter([
     {
         path: '/',
@@ -45,6 +48,9 @@ const router = createBrowserRouter([
             { path: 'product/:id', element: <EditProduct /> },
             { path: 'manage', element: <Manage /> },
             { path: 'orders', element: <ManageOrders /> },
+            { path: 'orders/:orderId', element: <OrderDetail /> }, // ✅ ถูกต้อง
+
+
         ]
     },
     {

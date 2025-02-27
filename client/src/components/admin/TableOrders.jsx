@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom"; // ✅ นำเข้า Link
 import { getOrdersAdmin, changeOrderStatus } from "../../api/admin";
-import useEcomStore from "../../store/ecom-store";  // เพิ่มการนำเข้า useEcomStore ที่นี่
+import useEcomStore from "../../store/ecom-store";
 import { toast } from "react-toastify";
 import { numberFormat } from "../../utils/number";
 import { dateFormat } from "../../utils/dateformat";
-
 
 const TableOrders = () => {
   const token = useEcomStore((state) => state.token);
@@ -17,14 +17,13 @@ const TableOrders = () => {
   const handleGetOrder = (token) => {
     getOrdersAdmin(token)
       .then((res) => {
-        console.log(res.data);  // ดูข้อมูลที่ได้จาก API
+        console.log(res.data);
         setOrders(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-  
 
   const handleChangeOrderStatus = (token, orderId, orderStatus) => {
     changeOrderStatus(token, orderId, orderStatus)
@@ -47,6 +46,8 @@ const TableOrders = () => {
         return "bg-green-200";
       case "Cancelled":
         return "bg-red-200";
+      default:
+        return "";
     }
   };
 
@@ -63,59 +64,67 @@ const TableOrders = () => {
               <th>รวม</th>
               <th>สถานะ</th>
               <th>จัดการ</th>
+              <th>รายละเอียด</th> {/* ✅ เพิ่มหัวข้อคอลัมน์ใหม่ */}
             </tr>
           </thead>
 
           <tbody>
-            {orders?.map((item, index) => {
-              return (
-                <tr key={index} className="border">
-                  <td className="text-center">{index + 1}</td>
-                  <td>
-                    <p>{item.orderedBy.name}</p> {/* ชื่อผู้ใช้ */}
-                    <p>{item.orderedBy.phone}</p> {/* เบอร์โทร */}
-                    <p>{item.orderedBy.address}</p> {/* ที่อยู่ */}
-                  </td>
+            {orders?.map((item, index) => (
+              <tr key={item.id} className="border"> {/* ✅ ใช้ item.id เป็น key */}
+                <td className="text-center">{index + 1}</td>
+                <td>
+                  <p>{item.orderedBy.name}</p>
+                  <p>{item.orderedBy.phone}</p>
+                  <p>{item.orderedBy.address}</p>
+                </td>
 
-                  <td>{dateFormat(item.createdAt)}</td>
+                <td>{dateFormat(item.createdAt)}</td>
 
-                  <td className="px-2 py-4">
-                    {item.products?.map((product, index) => (
-                      <li key={index}>
-                        {product.product.title} {"  "}
-                        <span className="text-sm">
-                          {product.count} x {numberFormat(product.product.price)}
-                        </span>
-                      </li>
-                    ))}
-                  </td>
+                <td className="px-2 py-4">
+                  {item.products?.map((product, index) => (
+                    <li key={index}>
+                      {product.product.title} {"  "}
+                      <span className="text-sm">
+                        {product.count} x {numberFormat(product.product.price)}
+                      </span>
+                    </li>
+                  ))}
+                </td>
 
-                  <td>{numberFormat(item.cartTotal)}</td>
+                <td>{numberFormat(item.cartTotal)}</td>
 
-                  <td>
-                    <span
-                      className={`${getStatusColor(item.orderStatus)} px-2 py-1 rounded-full`}
-                    >
-                      {item.orderStatus}
-                    </span>
-                  </td>
+                <td>
+                  <span className={`${getStatusColor(item.orderStatus)} px-2 py-1 rounded-full`}>
+                    {item.orderStatus}
+                  </span>
+                </td>
 
-                  <td>
-                    <select
-                      value={item.orderStatus}
-                      onChange={(e) =>
-                        handleChangeOrderStatus(token, item.id, e.target.value)
-                      }
-                    >
-                      <option>Not Process</option>
-                      <option>Processing</option>
-                      <option>Completed</option>
-                      <option>Cancelled</option>
-                    </select>
-                  </td>
-                </tr>
-              );
-            })}
+                <td>
+                  <select
+                    value={item.orderStatus}
+                    onChange={(e) =>
+                      handleChangeOrderStatus(token, item.id, e.target.value)
+                    }
+                  >
+                    <option>Not Process</option>
+                    <option>Processing</option>
+                    <option>Completed</option>
+                    <option>Cancelled</option>
+                  </select>
+                </td>
+
+                {/* ✅ เปลี่ยนเส้นทางให้ถูกต้อง */}
+                <td className="text-center">
+                  <Link
+                    to={`/admin/orders/${item.id}`} // เปลี่ยน "order" เป็น "orders"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  >
+                    ดูรายละเอียด
+                  </Link>
+                </td>
+
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
