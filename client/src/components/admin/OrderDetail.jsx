@@ -5,14 +5,14 @@ import useEcomStore from "../../store/ecom-store";
 import { toast } from "react-toastify";
 
 const OrderDetail = () => {
-  const { orderId } = useParams();
-  const token = useEcomStore((state) => state.token);
+  const { orderId } = useParams(); // ดึง orderId จาก URL
+  const token = useEcomStore((state) => state.token); // ใช้ token จาก store
   const [order, setOrder] = useState(null);
-  const [trackingNumber, setTrackingNumber] = useState("");
-  const [shippingCompany, setShippingCompany] = useState("");
+  const [trackingNumber, setTrackingNumber] = useState(""); // สถานะเลขพัสดุ
+  const [shippingCompany, setShippingCompany] = useState(""); // สถานะบริษัทขนส่ง
   const [loading, setLoading] = useState(true);
 
-  const shippingCompanies = ["Kerry", "Flash Express", "J&T", "DHL", "ไปรษณีย์ไทย"];
+  const shippingCompanies = ["Kerry", "Flash Express", "J&T", "DHL", "ไปรษณีย์ไทย"]; // ตัวเลือกบริษัทขนส่ง
 
   useEffect(() => {
     if (orderId) {
@@ -42,24 +42,23 @@ const OrderDetail = () => {
   
     try {
       const res = await updateTrackingNumber(token, orderId, trackingNumber, shippingCompany);
-      console.log(res); // ดูค่าผลลัพธ์ที่ได้รับจาก API
-  
-      // ตรวจสอบผลลัพธ์จากการอัปเดตหรือสร้าง OrderDetail
-      if (res.data.message === "Tracking number updated successfully" || res.data.message === "OrderDetail created successfully") {
+      
+      if (res.data.message === "Tracking number updated successfully") {
         toast.success("อัปเดตเลขพัสดุเรียบร้อย!");
-        setOrder(res.data.orderDetail); // อัปเดตข้อมูล OrderDetail ใหม่
+        setOrder(res.data.orderDetail); // อัปเดตข้อมูลออเดอร์ในสถานะ
         setTrackingNumber(res.data.orderDetail.trackingNumber); // อัปเดตเลขพัสดุ
         setShippingCompany(res.data.orderDetail.shippingCompany); // อัปเดตบริษัทขนส่ง
+  
+        // อัปเดต global store ด้วยข้อมูลใหม่
+        const newOrderUpdate = { orderId, trackingNumber, shippingCompany };
+        useEcomStore.getState().setOrderUpdates(prev => [...prev, newOrderUpdate]);
       } else {
-        toast.error(`ไม่สามารถอัปเดตเลขพัสดุได้: ${res.data.message}`); // แสดงข้อความจาก API
+        toast.error(`ไม่สามารถอัปเดตเลขพัสดุได้: ${res.data.message}`);
       }
     } catch (err) {
       toast.error(`ไม่สามารถอัปเดตเลขพัสดุได้: ${err.message}`);
     }
   };
-  
-  
-  
 
   if (loading) return <p className="text-center">⏳ กำลังโหลดข้อมูลออเดอร์...</p>;
   if (!order) return <p className="text-center text-red-500">❌ ไม่พบข้อมูลออเดอร์</p>;
@@ -73,7 +72,6 @@ const OrderDetail = () => {
         <p><strong>ที่อยู่:</strong> {order?.orderedBy?.address || "ไม่ระบุ"}</p>
       </div>
 
-      {/* ฟอร์มกรอกเลขพัสดุและเลือกบริษัทขนส่ง */}
       <div className="mt-4">
         <label className="block text-sm font-semibold">เลขพัสดุ</label>
         <input

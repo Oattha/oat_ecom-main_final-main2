@@ -58,3 +58,14 @@ export const updateUser = async (token, userData) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+
+
+// ฟังก์ชันดึงข้อมูลการติดตามออเดอร์
+// ตัวอย่างการ export ฟังก์ชัน getOrderTracking
+
+export const getOrderTracking = async (token, orderId) => {
+  return axios.get(`${API_URL}/order/${orderId}/tracking`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
