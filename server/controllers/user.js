@@ -386,3 +386,60 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+
+
+// controllers/user.js
+
+
+exports.getOrderTracking = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // ค้นหาออเดอร์ตาม orderId
+    const order = await prisma.order.findUnique({
+      where: { id: Number(orderId) },
+      include: {
+        orderDetail: true, // เชื่อมโยง orderDetail
+      },
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "ไม่พบออเดอร์นี้" });
+    }
+
+    res.json({
+      trackingNumber: order.orderDetail?.trackingNumber || "ยังไม่มีเลขพัสดุ",
+      shippingCompany: order.orderDetail?.shippingCompany || "ยังไม่เลือกบริษัทขนส่ง",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์" });
+  }
+};
+
+exports.getOrderTracking = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const userId = req.user.id;
+
+    // ค้นหาคำสั่งซื้อพร้อมรายละเอียด
+    const order = await prisma.order.findFirst({
+      where: { id: Number(orderId), orderedById: userId },
+      include: { orderDetail: true } // ต้อง include orderDetail เพื่อดึงข้อมูลที่เกี่ยวข้อง
+    });
+
+    if (!order) {
+      return res.status(404).json({ message: "ไม่พบคำสั่งซื้อ" });
+    }
+
+    // ส่งข้อมูล trackingNumber และ shippingCompany
+    res.json({
+      trackingNumber: order.orderDetail?.trackingNumber || "ยังไม่มีหมายเลข Tracking",
+      shippingCompany: order.orderDetail?.shippingCompany || "ยังไม่มีบริษัทขนส่ง"
+    });
+  } catch (err) {
+    console.log("❌ Error in getOrderTracking:", err);
+    res.status(500).json({ message: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์" });
+  }
+};
+

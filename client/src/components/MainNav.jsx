@@ -8,6 +8,7 @@ function MainNav() {
   const carts = useEcomStore((s) => s.carts);
   const user = useEcomStore((s) => s.user);
   const logout = useEcomStore((s) => s.logout);
+  const orderUpdates = useEcomStore((s) => s.orderUpdates); // ใช้ orderUpdates จาก store
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -61,6 +62,25 @@ function MainNav() {
                 </span>
               )}
             </NavLink>
+
+            {/* ปุ่มสำหรับแสดง Order Details */}
+            {user && (
+              <NavLink
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                    : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium"
+                }
+                to="/user/order-details" // ✅ เพิ่ม path สำหรับ Order Details
+              >
+                Order Details
+                {orderUpdates.length > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 rounded-full px-2">
+                    {orderUpdates.length}
+                  </span>
+                )}
+              </NavLink>
+            )}
           </div>
 
           {user ? (
