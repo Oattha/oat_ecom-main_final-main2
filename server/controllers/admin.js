@@ -5,6 +5,10 @@ exports.changeOrderStatus = async (req, res) => {
     try {
         const { orderId, orderStatus } = req.body;
 
+        if (!orderId || !orderStatus) {
+            return res.status(400).json({ error: "orderId and orderStatus are required" });
+        }
+
         const orderUpdate = await prisma.order.update({
             where: { id: Number(orderId) },
             data: { orderStatus: orderStatus },
@@ -12,7 +16,7 @@ exports.changeOrderStatus = async (req, res) => {
 
         res.json(orderUpdate);
     } catch (err) {
-        console.log("Error updating order status:", err);
+        console.error("Error updating order status:", err);
         res.status(500).json({ message: "Server error" });
     }
 };
@@ -39,7 +43,7 @@ exports.getOrderAdmin = async (req, res) => {
 
         res.json(orders);
     } catch (err) {
-        console.log("Error fetching orders:", err);
+        console.error("Error fetching orders:", err);
         res.status(500).json({ message: "Server error" });
     }
 };
@@ -49,6 +53,10 @@ exports.getOrderDetail = async (req, res) => {
     try {
         const { orderId } = req.params;
 
+        if (!orderId) {
+            return res.status(400).json({ error: "orderId is required" });
+        }
+
         const order = await prisma.order.findUnique({
             where: { id: Number(orderId) },
             include: {
@@ -56,13 +64,16 @@ exports.getOrderDetail = async (req, res) => {
                     select: {
                         id: true,
                         email: true,
-                        name: true, // ✅ ต้องเพิ่ม name
-                        phone: true, // เพิ่ม phone
+                        name: true,
+                        phone: true,
                         address: true,
                     },
                 },
-                products: {
-                    include: { product: true },
+                orderDetail: {
+                    select: {
+                        trackingNumber: true,
+                        shippingCompany: true,
+                    },
                 },
             },
         });
@@ -81,17 +92,42 @@ exports.getOrderDetail = async (req, res) => {
 // ✅ อัปเดตเลขพัสดุ (Tracking Number)
 exports.updateTrackingNumber = async (req, res) => {
     try {
-        const { orderId } = req.params;
-        const { trackingNumber } = req.body;
+        const { orderId } = req.params; // orderId จาก URL
+        const { trackingNumber, shippingCompany } = req.body; // ข้อมูลจาก body
 
-        const order = await prisma.order.update({
-            where: { id: Number(orderId) },
-            data: { trackingNumber },
+        console.log("Received orderId:", orderId);
+        console.log("Received trackingNumber:", trackingNumber);
+        console.log("Received shippingCompany:", shippingCompany);
+
+        if (!orderId || !trackingNumber) {
+            return res.status(400).json({ error: "orderId and trackingNumber are required" });
+        }
+
+        // ตรวจสอบ OrderDetail
+        let orderDetail = await prisma.orderDetail.findUnique({
+            where: { orderId: parseInt(orderId, 10) },
         });
 
-        res.json({ message: "Tracking number updated", order });
-    } catch (err) {
-        console.error("Error updating tracking number:", err);
-        res.status(500).json({ message: "Server error" });
+        if (!orderDetail) {
+            // ถ้าไม่พบ OrderDetail ให้สร้างใหม่
+            orderDetail = await prisma.orderDetail.create({
+                data: {
+                    orderId: parseInt(orderId, 10),
+                    trackingNumber,
+                    shippingCompany,
+                },
+            });
+        } else {
+            // ถ้ามี OrderDetail แล้ว อัปเดตข้อมูล
+            orderDetail = await prisma.orderDetail.update({
+                where: { orderId: parseInt(orderId, 10) },
+                data: { trackingNumber, shippingCompany },
+            });
+        }
+
+        res.json({ message: "Tracking number updated successfully", orderDetail });
+    } catch (error) {
+        console.error("Update Tracking Number Error:", error);
+        res.status(500).json({ error: error.message || "Internal server error" });
     }
 };

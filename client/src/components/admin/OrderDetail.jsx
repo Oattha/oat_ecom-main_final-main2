@@ -5,14 +5,16 @@ import useEcomStore from "../../store/ecom-store";
 import { toast } from "react-toastify";
 
 const OrderDetail = () => {
-  const { orderId } = useParams(); // ✅ เปลี่ยนจาก id เป็น orderId ให้ตรงกับ AppRoutes.jsx
+  const { orderId } = useParams();
   const token = useEcomStore((state) => state.token);
   const [order, setOrder] = useState(null);
   const [trackingNumber, setTrackingNumber] = useState("");
+  const [shippingCompany, setShippingCompany] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const shippingCompanies = ["Kerry", "Flash Express", "J&T", "DHL", "ไปรษณีย์ไทย"];
+
   useEffect(() => {
-    console.log("Current URL Path:", window.location.pathname);
     if (orderId) {
       fetchOrderDetail(orderId);
     }
@@ -22,28 +24,42 @@ const OrderDetail = () => {
     try {
       setLoading(true);
       const res = await getOrderDetail(token, orderId);
-      console.log("🔍 ข้อมูลออเดอร์ที่ได้รับ:", res.data); // ✅ เช็คว่ามี orderedBy ไหม
       setOrder(res.data);
-      setTrackingNumber(res.data.trackingNumber || "");
+      setTrackingNumber(res.data.orderDetail?.trackingNumber || "");
+      setShippingCompany(res.data.orderDetail?.shippingCompany || "");
     } catch (err) {
-      console.error("Error fetching order details:", err);
       toast.error("ไม่สามารถโหลดข้อมูลออเดอร์ได้");
     } finally {
       setLoading(false);
     }
   };
-  
 
   const handleUpdateTracking = async () => {
+    if (!trackingNumber || !shippingCompany) {
+      toast.error("กรุณากรอกเลขพัสดุและเลือกบริษัทขนส่ง");
+      return;
+    }
+  
     try {
-      await updateTrackingNumber(token, orderId, trackingNumber);
-      toast.success("อัปเดตเลขพัสดุเรียบร้อย!");
-      fetchOrderDetail(orderId);
+      const res = await updateTrackingNumber(token, orderId, trackingNumber, shippingCompany);
+      console.log(res); // ดูค่าผลลัพธ์ที่ได้รับจาก API
+  
+      // ตรวจสอบผลลัพธ์จากการอัปเดตหรือสร้าง OrderDetail
+      if (res.data.message === "Tracking number updated successfully" || res.data.message === "OrderDetail created successfully") {
+        toast.success("อัปเดตเลขพัสดุเรียบร้อย!");
+        setOrder(res.data.orderDetail); // อัปเดตข้อมูล OrderDetail ใหม่
+        setTrackingNumber(res.data.orderDetail.trackingNumber); // อัปเดตเลขพัสดุ
+        setShippingCompany(res.data.orderDetail.shippingCompany); // อัปเดตบริษัทขนส่ง
+      } else {
+        toast.error(`ไม่สามารถอัปเดตเลขพัสดุได้: ${res.data.message}`); // แสดงข้อความจาก API
+      }
     } catch (err) {
-      console.error("Error updating tracking number:", err);
-      toast.error("ไม่สามารถอัปเดตเลขพัสดุได้");
+      toast.error(`ไม่สามารถอัปเดตเลขพัสดุได้: ${err.message}`);
     }
   };
+  
+  
+  
 
   if (loading) return <p className="text-center">⏳ กำลังโหลดข้อมูลออเดอร์...</p>;
   if (!order) return <p className="text-center text-red-500">❌ ไม่พบข้อมูลออเดอร์</p>;
@@ -56,6 +72,8 @@ const OrderDetail = () => {
         <p><strong>เบอร์โทร:</strong> {order?.orderedBy?.phone || "ไม่ระบุ"}</p>
         <p><strong>ที่อยู่:</strong> {order?.orderedBy?.address || "ไม่ระบุ"}</p>
       </div>
+
+      {/* ฟอร์มกรอกเลขพัสดุและเลือกบริษัทขนส่ง */}
       <div className="mt-4">
         <label className="block text-sm font-semibold">เลขพัสดุ</label>
         <input
@@ -63,7 +81,23 @@ const OrderDetail = () => {
           value={trackingNumber}
           onChange={(e) => setTrackingNumber(e.target.value)}
           className="w-full p-2 border rounded-md"
+          placeholder="กรอกเลขพัสดุ"
         />
+
+        <label className="block text-sm font-semibold mt-2">บริษัทขนส่ง</label>
+        <select
+          value={shippingCompany}
+          onChange={(e) => setShippingCompany(e.target.value)}
+          className="w-full p-2 border rounded-md"
+        >
+          <option value="">-- เลือกบริษัทขนส่ง --</option>
+          {shippingCompanies.map((company, index) => (
+            <option key={index} value={company}>
+              {company}
+            </option>
+          ))}
+        </select>
+
         <button
           onClick={handleUpdateTracking}
           className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
@@ -76,4 +110,3 @@ const OrderDetail = () => {
 };
 
 export { OrderDetail };
-
