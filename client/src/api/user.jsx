@@ -15,16 +15,18 @@ export const listUserCart = async (token) => {
   });
 };
 
-export const saveAddress = async (token, address) => {
+// แก้ไข saveAddress ให้รองรับข้อมูลชื่อ, เบอร์โทร, ที่อยู่
+export const saveAddress = async (token, { name, phone, address }) => {
   return axios.post(
     `${API_URL}/user/address`,
-    { address },
+    { name, phone, address },
     {
       headers: { Authorization: `Bearer ${token}` },
     }
   );
 };
 
+// ฟังก์ชันสำหรับการบันทึกคำสั่งซื้อใหม่
 export const saveOrder = async (token, payload) => {
   return axios.post(`${API_URL}/user/order`, payload, {
     headers: { Authorization: `Bearer ${token}` },
@@ -37,12 +39,21 @@ export const getOrders = async (token) => {
   });
 };
 
+// ดึงข้อมูลผู้ใช้ปัจจุบัน
 export const getCurrentUser = async (token) => {
   return axios.get(`${API_URL}/current-user`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
 
+// ฟังก์ชันสำหรับการอัปเดตข้อมูลผู้ใช้ (ชื่อ, เบอร์โทร, ที่อยู่)
+export const updateUser = async (token, userData) => {
+  return axios.put(`${API_URL}/user/update`, userData, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+};
+
+// ฟังก์ชันสำหรับการบันทึกข้อมูลผู้ใช้ใหม่
 export const saveUserInfo = async (token, name, phone, address) => {
   return axios.post(
     `${API_URL}/user/info`,
@@ -53,19 +64,20 @@ export const saveUserInfo = async (token, name, phone, address) => {
   );
 };
 
-export const updateUser = async (token, userData) => {
-  return axios.put(`${API_URL}/user/update`, userData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-};
-
-
-
 // ฟังก์ชันดึงข้อมูลการติดตามออเดอร์
-// ตัวอย่างการ export ฟังก์ชัน getOrderTracking
-
 export const getOrderTracking = async (token, orderId) => {
   return axios.get(`${API_URL}/order/${orderId}/tracking`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+};
+
+// ฟังก์ชันสำหรับการอัปเดตข้อมูลการจัดส่งใน OrderDetail
+export const updateOrderDetail = async (token, orderId, { name, phone, address }) => {
+  return axios.put(
+    `${API_URL}/order/${orderId}/update`,
+    { name, phone, address },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 };
