@@ -49,7 +49,7 @@ export default function CheckoutForm() {
           console.log(res);
           clearCart()
           toast.success("Payment Success!!!");
-          navigate("/user/history");
+          navigate("/user/shipping");
         })
         .catch((err) => {
           console.log(err);

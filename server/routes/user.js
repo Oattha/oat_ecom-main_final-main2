@@ -15,8 +15,10 @@ const {
     saveNameAndPhone,
     getNameAndPhone,
     currentUser,
-    updateUser,
-    getOrderTracking // ✅ เพิ่ม updateUser
+    //updateUser,
+    getOrderTracking,
+    createOrderDetail,
+    getOrderDetailByOrderId // ✅ เพิ่ม updateUser
 } = require('../controllers/user');
 
 // Routes สำหรับผู้ใช้ทั่วไป
@@ -37,9 +39,15 @@ router.post('/user/name-phone', authCheck, saveNameAndPhone);
 router.get('/user/name-phone', authCheck, getNameAndPhone);
 
 router.get("/current-user", authCheck, currentUser);
-
+router.post("/current-user", authCheck, currentUser);
 // ✅ ตอนนี้ updateUser จะถูกใช้งานได้
-router.put("/user/update", authCheck, updateUser);
+//router.put("/user/update", authCheck, updateUser);
+
+router.post("/order-detail/create", authCheck, createOrderDetail);
+//router.get("/order-detail/create", authCheck, createOrderDetail);
+
+
+router.get("/order-detail/:orderId", authCheck, getOrderDetailByOrderId);
 
 // เพิ่มการตรวจสอบสิทธิ์การเข้าถึงข้อมูลของออเดอร์
 router.get('/order/:orderId/tracking', authCheck, getOrderTracking); // ✅ เพิ่มเส้นทางใหม่สำหรับการดูข้อมูล tracking

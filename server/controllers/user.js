@@ -260,7 +260,8 @@ exports.saveOrder = async (req, res) => {
     await prisma.cart.deleteMany({
       where: { orderedById: Number(req.user.id) },
     });
-    res.json({ ok: true, order });
+    res.json({ ok: true, orderId: order.id });
+
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server Error" });
@@ -371,29 +372,87 @@ exports.currentUser = async (req, res) => {
 };
 
 
-exports.updateUser = async (req, res) => {
+exports.createOrderDetail = async (req, res) => {
   try {
-      const { name, phone, address } = req.body;
+    let { orderId, trackingNumber, shippingCompany, name, phone, address } = req.body;
 
-      // อัปเดตข้อมูลผู้ใช้
-      const user = await prisma.user.update({
-          where: { id: Number(req.user.id) },
-          data: { name, phone, address },
+    // ✅ ถ้าไม่ได้ส่ง orderId มา → ดึง orderId ล่าสุดจากตาราง Order
+    if (!orderId) {
+      const latestOrder = await prisma.order.findFirst({
+        orderBy: { id: "desc" }, // ดึง order ล่าสุด
       });
 
-      // อัปเดตข้อมูลใน OrderDetail ที่เกี่ยวข้องกับผู้ใช้
-      const updatedOrderDetails = await prisma.orderDetail.updateMany({
-          where: { order: { orderedById: Number(req.user.id) } }, // หา Order ที่ผู้ใช้สั่ง
-          data: { name, phone, address }, // อัปเดตชื่อ เบอร์โทร และที่อยู่ใน OrderDetail
-      });
+      if (!latestOrder) {
+        return res.status(400).json({ message: "No existing orders found" });
+      }
 
-      // ส่งผลลัพธ์กลับไปยัง client
-      res.json({ message: "User updated successfully", user, updatedOrderDetails });
-  } catch (err) {
-      console.log(err);
-      res.status(500).json({ message: "Server Error" });
+      orderId = latestOrder.id; // ใช้ orderId ล่าสุด
+    }
+
+    // ✅ ตรวจสอบว่า orderDetail มีอยู่แล้วหรือไม่
+    let existingOrderDetail = await prisma.orderDetail.findFirst({
+      where: { orderId }
+    });
+
+    let result;
+    if (existingOrderDetail) {
+      // ✅ ถ้ามีอยู่แล้ว → อัปเดต
+      result = await prisma.orderDetail.update({
+        where: { id: existingOrderDetail.id },
+        data: { trackingNumber, shippingCompany, name, phone, address }
+      });
+    } else {
+      // ✅ ถ้ายังไม่มี → สร้างใหม่
+      result = await prisma.orderDetail.create({
+        data: { orderId, trackingNumber, shippingCompany, name, phone, address }
+      });
+    }
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("❌ Error creating/updating order detail:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+
+
+//new code2
+exports.getOrderDetailByOrderId = async (req, res) => {
+  try {
+    console.log("📌 [START] Fetching OrderDetail");
+
+    const { orderId } = req.params;
+    console.log("🔍 Received orderId:", orderId);
+
+    // ตรวจสอบว่า orderId เป็นตัวเลขหรือไม่
+    const parsedOrderId = parseInt(orderId);
+    if (isNaN(parsedOrderId)) {
+      console.log("❌ Invalid orderId format:", orderId);
+      return res.status(400).json({ message: "Invalid orderId format" });
+    }
+
+    // ค้นหา OrderDetail ตาม orderId
+    console.log("🔎 Searching for OrderDetail with orderId:", parsedOrderId);
+    const orderDetail = await prisma.orderDetail.findUnique({
+      where: { orderId: parsedOrderId }
+    });
+
+    if (!orderDetail) {
+      console.log("⚠️ OrderDetail not found for orderId:", parsedOrderId);
+      return res.status(404).json({ message: "OrderDetail not found" });
+    }
+
+    console.log("✅ OrderDetail found:", orderDetail);
+    res.status(200).json(orderDetail);
+
+  } catch (error) {
+    console.error("❌ Error fetching order detail:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 
 
 

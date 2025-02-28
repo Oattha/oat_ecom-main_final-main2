@@ -72,12 +72,22 @@ export const getOrderTracking = async (token, orderId) => {
 };
 
 // ฟังก์ชันสำหรับการอัปเดตข้อมูลการจัดส่งใน OrderDetail
-export const updateOrderDetail = async (token, orderId, { name, phone, address }) => {
-  return axios.put(
-    `${API_URL}/order/${orderId}/update`,
-    { name, phone, address },
+
+export const createOrderDetail = async (token, { orderId, name, phone, address }) => {
+  return axios.post(
+    `${API_URL}/order-detail/create`, // ✅ เปลี่ยน URL ให้ถูกต้อง
+    { orderId, name, phone, address }, 
     {
       headers: { Authorization: `Bearer ${token}` },
     }
   );
+};
+
+
+
+
+export const createOrder = (token, orderData) => {
+  return axios.post(`${API_URL}/user/order`, saveOrder, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 };

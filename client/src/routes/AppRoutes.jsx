@@ -24,7 +24,7 @@ import ManageOrders from '../pages/admin/ManageOrders'
 import Profile from '../pages/user/Profile' // ✅ เพิ่ม import Profile
 import { OrderDetail } from '../components/admin/OrderDetail';
 import OrderDetailuser from '../pages/user/OrderDetailuser';  // แก้เป็นเส้นทางใหม่
-
+import Shipping from '../pages/user/shipping';
  // ใช้เส้นทางนี้แทน
  // ✅ เพิ่ม import สำหรับ OrderDetailUser
 
@@ -67,7 +67,7 @@ const router = createBrowserRouter([
             { path: 'history', element: <History /> },
             { path: 'profile', element: <Profile /> },
             { path: 'order-details', element: <OrderDetailuser /> }, // ใช้ OrderDetailuser สำหรับ User  // เพิ่มเส้นทางนี้สำหรับแสดง Order Detail ของ User
-            
+            { path: 'shipping', element: <Shipping /> },
         ]
     }
 
