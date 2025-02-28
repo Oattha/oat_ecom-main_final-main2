@@ -67,9 +67,13 @@ model OrderDetail {
   id              Int     @id @default(autoincrement())
   trackingNumber  String?  
   shippingCompany String?  
-  orderId         Int     @unique @map("order_id") // ✅ ต้องมี @unique เพราะเป็น 1:1
+  orderId         Int     @unique @map("order_id")
   order           Order   @relation(fields: [orderId], references: [id])
+  name            String? // เพิ่มฟิลด์ name
+  phone           String? // เพิ่มฟิลด์ phone
+  address         String? // เพิ่มฟิลด์ address
 }
+
 
 
 

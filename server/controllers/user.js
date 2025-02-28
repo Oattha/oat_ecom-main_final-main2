@@ -291,64 +291,64 @@ exports.getOrder = async (req, res) => {
 };
 
 
-// controllers/user.js
-
-exports.saveNameAndPhone = async (req, res) => {
-  try {
-    const { name, phone } = req.body;
-    console.log(name, phone);
-    // ใช้ ID จาก JWT หรือ session ใน req.user.id
-    const user = await prisma.user.update({
-      where: {
-        id: Number(req.user.id), // ใช้ user ID จาก session หรือ JWT
-      },
-      data: {
-        name: name,
-        phone: phone,
-      },
-    });
-
-    res.json({ ok: true, message: 'Name and phone updated successfully', user });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
+// controllers/user.js 
 
 exports.getNameAndPhone = async (req, res) => {
   try {
-      const user = await prisma.user.findFirst({
-          where: { email: req.user.email },
-          select: { name: true, phone: true }
+      // ค้นหาคำสั่งซื้อของผู้ใช้
+      const order = await prisma.order.findFirst({
+          where: { orderedById: req.user.id },
+          include: {
+              orderDetail: true, // ดึงข้อมูลจาก OrderDetail
+          }
       });
 
-      if (!user) {
-          return res.status(404).json({ message: "User not found" });
+      if (!order || !order.orderDetail) {
+          return res.status(404).json({ message: "Order not found" });
       }
 
-      res.json(user);
+      // ส่งข้อมูลชื่อ, เบอร์โทร, และที่อยู่จาก OrderDetail
+      res.json({
+          name: order.orderDetail.name,
+          phone: order.orderDetail.phone,
+          address: order.orderDetail.address,
+      });
   } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 exports.saveNameAndPhone = async (req, res) => {
   try {
-      const { name, phone } = req.body;
+      const { name, phone, address } = req.body; // เพิ่ม address ในการรับข้อมูลจาก body
 
-      const user = await prisma.user.update({
-          where: { email: req.user.email },
-          data: { name, phone }
+      // ค้นหาคำสั่งซื้อที่เกี่ยวข้องกับผู้ใช้
+      const order = await prisma.order.findFirst({
+          where: { orderedById: req.user.id },
+          include: {
+              orderDetail: true, // ตรวจสอบว่าเรามี OrderDetail อยู่แล้วหรือไม่
+          }
       });
 
-      res.json({ message: "บันทึกข้อมูลสำเร็จ", user });
+      if (!order || !order.orderDetail) {
+          return res.status(404).json({ message: "Order not found" });
+      }
+
+      // อัปเดตข้อมูลใน OrderDetail
+      const updatedOrderDetail = await prisma.orderDetail.update({
+          where: { orderId: order.id }, // ใช้ orderId เพื่อค้นหา OrderDetail
+          data: { name, phone, address }, // อัปเดต name, phone, address
+      });
+
+      res.json({ message: "บันทึกข้อมูลสำเร็จ", updatedOrderDetail });
   } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 
 exports.currentUser = async (req, res) => {
@@ -374,17 +374,27 @@ exports.currentUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
   try {
       const { name, phone, address } = req.body;
+
+      // อัปเดตข้อมูลผู้ใช้
       const user = await prisma.user.update({
           where: { id: Number(req.user.id) },
           data: { name, phone, address },
       });
 
-      res.json({ message: "User updated successfully", user });
+      // อัปเดตข้อมูลใน OrderDetail ที่เกี่ยวข้องกับผู้ใช้
+      const updatedOrderDetails = await prisma.orderDetail.updateMany({
+          where: { order: { orderedById: Number(req.user.id) } }, // หา Order ที่ผู้ใช้สั่ง
+          data: { name, phone, address }, // อัปเดตชื่อ เบอร์โทร และที่อยู่ใน OrderDetail
+      });
+
+      // ส่งผลลัพธ์กลับไปยัง client
+      res.json({ message: "User updated successfully", user, updatedOrderDetails });
   } catch (err) {
       console.log(err);
       res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 
 

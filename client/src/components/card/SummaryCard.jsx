@@ -1,20 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { listUserCart, saveAddress, getCurrentUser, updateUser } from "../../api/user";
-
 import useEcomStore from "../../store/ecom-store";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { numberFormat } from "../../utils/number";
-
 
 const SummaryCard = () => {
   const token = useEcomStore((state) => state.token);
   const [products, setProducts] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
 
-  const [name, setName] = useState(""); // ✅ เพิ่ม state ชื่อ
-  const [phone, setPhone] = useState(""); // ✅ เพิ่ม state เบอร์โทร
-  const [address, setAddress] = useState("");
+  const [name, setName] = useState(""); // เพิ่ม state ชื่อ
+  const [phone, setPhone] = useState(""); // เพิ่ม state เบอร์โทร
+  const [address, setAddress] = useState(""); // เพิ่ม state ที่อยู่
   const [addressSaved, setAddressSaved] = useState(false);
 
   const navigate = useNavigate();
@@ -22,7 +20,7 @@ const SummaryCard = () => {
   useEffect(() => {
     hdlGetUserCart(token);
     hdlGetUserInfo(token);
-  }, []);
+  }, [token]);
 
   const hdlGetUserCart = (token) => {
     listUserCart(token)
@@ -33,18 +31,18 @@ const SummaryCard = () => {
       .catch((err) => console.log(err));
   };
 
-  // ✅ ดึงข้อมูล user (ชื่อ, เบอร์โทร, ที่อยู่)
+  // ดึงข้อมูล user (ชื่อ, เบอร์โทร, ที่อยู่)
   const hdlGetUserInfo = (token) => {
     getCurrentUser(token)
       .then((res) => {
-        setName(res.data.user.name || "");
-        setPhone(res.data.user.phone || "");
-        setAddress(res.data.user.address || "");
+        setName(res.data.name || ""); // แก้ไขให้ตรงกับ response
+        setPhone(res.data.phone || "");
+        setAddress(res.data.address || "");
       })
       .catch((err) => console.log(err));
   };
 
-  // ✅ บันทึกข้อมูลที่อยู่, ชื่อ, เบอร์โทร
+  // บันทึกข้อมูลที่อยู่, ชื่อ, เบอร์โทร
   const hdlSaveAddress = () => {
     if (!name || !phone || !address) {
       return toast.warning("กรุณากรอกข้อมูลให้ครบ");

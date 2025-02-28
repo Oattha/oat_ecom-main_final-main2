@@ -13,3 +13,6 @@ npm run dev
 
 npm install
 npm install express  
+
+
+npx prisma studio
