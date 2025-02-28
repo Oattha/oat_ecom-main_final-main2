@@ -1,0 +1,15 @@
+> cd server  
+npm run start  
+
+npm i cloudinary
+
+npx prisma migrate dev --name init
+npx prisma generate
+
+cd client
+npm run dev
+
+
+
+npm install
+npm install express  
