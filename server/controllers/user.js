@@ -459,61 +459,37 @@ exports.getOrderDetailByOrderId = async (req, res) => {
 
 // controllers/user.js
 
-
 exports.getOrderTracking = async (req, res) => {
   try {
-    const { orderId } = req.params;
+    console.log("🔍 req.user:", req.user); // ✅ ตรวจสอบ user id
+    const userId = req.user?.id;
 
-    // ค้นหาออเดอร์ตาม orderId
-    const order = await prisma.order.findUnique({
-      where: { id: Number(orderId) },
-      include: {
-        orderDetail: true, // เชื่อมโยง orderDetail
-      },
-    });
-
-    if (!order) {
-      return res.status(404).json({ message: "ไม่พบออเดอร์นี้" });
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: ไม่มีข้อมูลผู้ใช้" });
     }
 
-    res.json({
-      trackingNumber: order.orderDetail?.trackingNumber || "ยังไม่มีเลขพัสดุ",
-      shippingCompany: order.orderDetail?.shippingCompany || "ยังไม่เลือกบริษัทขนส่ง",
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์" });
-  }
-};
-
-exports.getOrderTracking = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const userId = req.user.id;
-
-    // ค้นหาคำสั่งซื้อพร้อมรายละเอียด
-    const order = await prisma.order.findFirst({
-      where: { id: Number(orderId), orderedById: userId },
-      include: { 
-        orderDetail: true, 
-        orderedBy: true // เพิ่มการดึงข้อมูลผู้ที่สั่งซื้อ เช่น ที่อยู่, เบอร์โทร, ชื่อ
-      }
+    const orders = await prisma.order.findMany({
+      where: { orderedById: userId },
+      include: { orderDetail: true },
     });
 
-    if (!order) {
-      return res.status(404).json({ message: "ไม่พบคำสั่งซื้อ" });
+    if (!orders.length) {
+      return res.status(404).json({ message: "ไม่พบคำสั่งซื้อของคุณ" });
     }
 
-    // ส่งข้อมูล trackingNumber, shippingCompany, address, phone และ name ของผู้สั่งซื้อ
-    res.json({
+    const trackingInfo = orders.map(order => ({
+      orderId: order.id,
       trackingNumber: order.orderDetail?.trackingNumber || "ยังไม่มีหมายเลข Tracking",
       shippingCompany: order.orderDetail?.shippingCompany || "ยังไม่มีบริษัทขนส่ง",
-      address: order.orderedBy?.address || "ยังไม่มีที่อยู่",
-      phone: order.orderedBy?.phone || "ยังไม่มีเบอร์โทร",
-      name: order.orderedBy?.name || "ยังไม่มีชื่อผู้สั่งซื้อ" // เพิ่มชื่อผู้สั่งซื้อ
-    });
+      address: order.orderDetail?.address || "ยังไม่มีที่อยู่",
+      phone: order.orderDetail?.phone || "ยังไม่มีเบอร์โทร",
+      name: order.orderDetail?.name || "ยังไม่มีชื่อผู้สั่งซื้อ"
+    }));
+
+    res.json(trackingInfo);
   } catch (err) {
     console.log("❌ Error in getOrderTracking:", err);
     res.status(500).json({ message: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์" });
   }
 };
+

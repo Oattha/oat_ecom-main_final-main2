@@ -73,6 +73,9 @@ exports.getOrderDetail = async (req, res) => {
                     select: {
                         trackingNumber: true,
                         shippingCompany: true,
+                        name: true,  // ✅ เพิ่มฟิลด์ name
+                        phone: true, // ✅ เพิ่มฟิลด์ phone
+                        address: true // ✅ เพิ่มฟิลด์ address
                     },
                 },
             },
@@ -88,6 +91,7 @@ exports.getOrderDetail = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
 
 // ✅ อัปเดตเลขพัสดุ (Tracking Number)
 exports.updateTrackingNumber = async (req, res) => {
@@ -131,3 +135,5 @@ exports.updateTrackingNumber = async (req, res) => {
         res.status(500).json({ error: error.message || "Internal server error" });
     }
 };
+
+
