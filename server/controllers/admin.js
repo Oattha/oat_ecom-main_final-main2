@@ -137,3 +137,34 @@ exports.updateTrackingNumber = async (req, res) => {
 };
 
 
+// ดึงข้อมูลสถิติของ Admin
+exports.getAdminStats = async (req, res) => {
+    try {
+      const totalOrders = await prisma.order.count();
+      const totalUsers = await prisma.user.count();
+      const totalProducts = await prisma.product.count();
+      
+      const totalSales = await prisma.order.aggregate({
+        _sum: { cartTotal: true }
+      });
+  
+      console.log({
+        totalOrders,
+        totalUsers,
+        totalProducts,
+        totalSales: totalSales._sum.cartTotal || 0
+      });
+  
+      res.json({
+        totalOrders,
+        totalUsers,
+        totalProducts,
+        totalSales: totalSales._sum.cartTotal || 0,
+      });
+    } catch (error) {
+      console.error("Error fetching stats:", error); // log ข้อผิดพลาดที่เกิดขึ้น
+      res.status(500).json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" });
+    }
+  };
+  
+  

@@ -46,13 +46,14 @@ const router = createBrowserRouter([
         path: '/admin',
         element: <ProtectRouteAdmin element={<LayoutAdmin />} />,
         children: [
-            { index: true, element: <Dashboard /> },
+            { index: true, element: <Dashboard /> }, // หน้า Dashboard สำหรับ Admin
             { path: 'category', element: <Category /> },
             { path: 'product', element: <Product /> },
             { path: 'product/:id', element: <EditProduct /> },
             { path: 'manage', element: <Manage /> },
             { path: 'orders', element: <ManageOrders /> },
-            { path: 'orders/:orderId', element: <OrderDetail /> }, // ✅ ถูกต้อง
+            { path: 'orders/:orderId', element: <OrderDetail /> },
+            { path: 'orders/:orderId', element: <Dashboard /> }, // ✅ ถูกต้อง
 
 
         ]

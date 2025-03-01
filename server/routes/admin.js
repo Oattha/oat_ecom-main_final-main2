@@ -8,7 +8,8 @@ const {
     changeOrderStatus, 
     getOrderDetail, 
     updateTrackingNumber,
-    getOrderTrackingAdmin 
+    getOrderTrackingAdmin,
+    getAdminStats  
 } = require('../controllers/admin');
 
 // API ดึงออเดอร์ทั้งหมด (มีอยู่แล้ว)
@@ -25,5 +26,5 @@ router.put('/admin/orders/:orderId/tracking', authCheck, updateTrackingNumber); 
 router.post('/admin/orders/:orderId/tracking', authCheck, updateTrackingNumber);
 
 /*router.get("/admin/orders/tracking", authCheck, getOrderTrackingAdmin);*/
-
+router.get("/admin/stats",authCheck, getAdminStats);
 module.exports = router;

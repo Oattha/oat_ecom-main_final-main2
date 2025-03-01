@@ -36,6 +36,8 @@ const Login = () => {
     try {
       const res = await actionLogin(form);
       const role = res.data.payload.role;
+      const token = res.data.token;  // สมมติว่า token มาในรูปนี้
+      localStorage.setItem('token', token);  // บันทึก token ใน localStorage
       roleRedirect(role);
       toast.success("Welcome Back");
     } catch (err) {
@@ -44,6 +46,7 @@ const Login = () => {
       toast.error(errMsg);
     }
   };
+  
 
   const roleRedirect = (role) => {
     if (role === "admin") {

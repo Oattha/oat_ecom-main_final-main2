@@ -61,10 +61,28 @@ export const updateTrackingNumber = (token, orderId, trackingNumber, shippingCom
 
 
 // ✅ ฟังก์ชันดึงรายละเอียดออเดอร์ (แก้ให้สมบูรณ์)
-export const getOrderDetail = async (token, orderId) => {
+export const getOrderDetail = (token, orderId) => {
   return axios.get(`http://localhost:5001/api/admin/orders/${orderId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 };
+
+
+export const getAdminStats = (token) => {
+  return axios.get("http://localhost:5001/api/admin/stats", {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  .then(response => {
+    console.log("Response from API: ", response);  // เพิ่ม log เพื่อดูข้อมูลที่ได้รับ
+    return response;
+  })
+  .catch(error => {
+    console.error("API Error: ", error);  // เพิ่ม log ในกรณีที่เกิดข้อผิดพลาด
+    throw error;  // เพื่อให้สามารถ catch ใน component ได้
+  });
+};
+
+
+getAdminStats
