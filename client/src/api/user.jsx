@@ -48,7 +48,7 @@ export const getCurrentUser = async (token) => {
 
 // ฟังก์ชันสำหรับการอัปเดตข้อมูลผู้ใช้ (ชื่อ, เบอร์โทร, ที่อยู่)
 export const updateUser = async (token, userData) => {
-  return axios.put(`${API_URL}/user/update`, userData, {
+  return axios.put(`${API_URL}/user/updateUser`, userData, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };

@@ -15,7 +15,7 @@ const {
     saveNameAndPhone,
     getNameAndPhone,
     currentUser,
-    //updateUser,
+    updateUser,
     getOrderTracking,
     createOrderDetail,
     getOrderDetailByOrderId // ✅ เพิ่ม updateUser
@@ -39,7 +39,7 @@ router.post('/user/name-phone', authCheck, saveNameAndPhone);
 router.get('/user/name-phone', authCheck, getNameAndPhone);
 
 router.get("/current-user", authCheck, currentUser);
-router.post("/current-user", authCheck, currentUser);
+router.put("/user/updateuser", authCheck, updateUser);
 // ✅ ตอนนี้ updateUser จะถูกใช้งานได้
 //router.put("/user/update", authCheck, updateUser);
 
