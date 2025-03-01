@@ -81,6 +81,18 @@ function MainNav() {
                 )}
               </NavLink>
             )}
+
+            {/* เพิ่มปุ่ม "ติดต่อเรา" */}
+            <NavLink
+              className={({ isActive }) =>
+                isActive
+                  ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
+                  : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium "
+              }
+              to="/contact-us" // เพิ่ม path สำหรับหน้า Contact Us
+            >
+              ติดต่อเรา
+            </NavLink>
           </div>
 
           {user ? (

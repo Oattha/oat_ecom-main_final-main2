@@ -351,7 +351,7 @@ exports.saveNameAndPhone = async (req, res) => {
 };
 
 
-
+//ดึงข้อมูลผู้ใช้ปัจจุบัน
 exports.currentUser = async (req, res) => {
   try {
       const user = await prisma.user.findFirst({
@@ -371,6 +371,27 @@ exports.currentUser = async (req, res) => {
       res.status(500).json({ message: 'Server Error' });
   }
 }
+//แก้ไขข้อมูลผู้ใช้
+exports.updateUser = async (req, res) => {
+  const { name, phone, address } = req.body; // ดึงข้อมูลจาก body (ที่ส่งมาจาก client)
+
+  try {
+    const user = await prisma.user.update({
+      where: { email: req.user.email }, // ค้นหาผู้ใช้ตามอีเมล
+      data: {
+        name, // อัปเดตชื่อ
+        phone, // อัปเดตเบอร์โทร
+        address, // อัปเดตที่อยู่
+      },
+    });
+
+    // ส่งข้อมูลที่อัปเดตกลับไป
+    res.json({ message: "ข้อมูลอัปเดตสำเร็จ", user });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล" });
+  }
+};
 
 
 
