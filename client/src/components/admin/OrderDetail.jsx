@@ -45,10 +45,10 @@ const OrderDetail = () => {
       
       if (res.data.message === "Tracking number updated successfully") {
         toast.success("อัปเดตเลขพัสดุเรียบร้อย!");
-        setOrder(res.data.orderDetail); // อัปเดตข้อมูลออเดอร์ในสถานะ
-        setTrackingNumber(res.data.orderDetail.trackingNumber); // อัปเดตเลขพัสดุ
-        setShippingCompany(res.data.orderDetail.shippingCompany); // อัปเดตบริษัทขนส่ง
-  
+        setOrder(res.data.orderDetail);
+        setTrackingNumber(res.data.orderDetail.trackingNumber);
+        setShippingCompany(res.data.orderDetail.shippingCompany);
+
         // อัปเดต global store ด้วยข้อมูลใหม่
         const newOrderUpdate = { orderId, trackingNumber, shippingCompany };
         useEcomStore.getState().setOrderUpdates(prev => [...prev, newOrderUpdate]);
@@ -66,12 +66,26 @@ const OrderDetail = () => {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
       <h2 className="text-xl font-bold text-center mb-4">รายละเอียดออเดอร์</h2>
+
+      {/* 🔹 ข้อมูลผู้สั่งซื้อ */}
       <div className="border p-4 rounded-md">
-        <p><strong>ชื่อผู้สั่ง:</strong> {order?.orderedBy?.name || "ไม่ระบุ"}</p>
+        <h3 className="text-lg font-semibold">👤 ข้อมูลผู้ซื้อ</h3>
+        <p><strong>ชื่อ:</strong> {order?.orderedBy?.name || "ไม่ระบุ"}</p>
         <p><strong>เบอร์โทร:</strong> {order?.orderedBy?.phone || "ไม่ระบุ"}</p>
         <p><strong>ที่อยู่:</strong> {order?.orderedBy?.address || "ไม่ระบุ"}</p>
       </div>
 
+      {/* 🔹 ข้อมูลการจัดส่ง */}
+      <div className="border p-4 rounded-md mt-4">
+        <h3 className="text-lg font-semibold">📦 ข้อมูลการจัดส่ง</h3>
+        <p><strong>ชื่อผู้รับ:</strong> {order?.orderDetail?.name || "ไม่ระบุ"}</p>
+        <p><strong>เบอร์โทรผู้รับ:</strong> {order?.orderDetail?.phone || "ไม่ระบุ"}</p>
+        <p><strong>ที่อยู่ผู้รับ:</strong> {order?.orderDetail?.address || "ไม่ระบุ"}</p>
+        <p><strong>เลขพัสดุ:</strong> {order?.orderDetail?.trackingNumber || "ยังไม่มีข้อมูล"}</p>
+        <p><strong>บริษัทขนส่ง:</strong> {order?.orderDetail?.shippingCompany || "ยังไม่มีข้อมูล"}</p>
+      </div>
+
+      {/* 🔹 อัปเดตเลขพัสดุ */}
       <div className="mt-4">
         <label className="block text-sm font-semibold">เลขพัสดุ</label>
         <input

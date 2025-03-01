@@ -1,30 +1,36 @@
-// Step 1 import ....
-const express = require('express')
-const app = express()
-const morgan = require('morgan')
-const { readdirSync } = require('fs')
-const cors = require('cors')
-// const authRouter = require('./routes/auth')
-// const categoryRouter = require('./routes/category')
+// Step 1: Import modules
+const express = require('express');
+const app = express();
+const morgan = require('morgan');
+const { readdirSync } = require('fs');
+const cors = require('cors');
+const bodyParser = require('body-parser');
 
-// middleware
-app.use(morgan('dev'))
-app.use(express.json({ limit: '20mb' }))
-app.use(cors())
-// app.use('/api',authRouter)
-// app.use('/api',categoryRouter)
-readdirSync('./routes')
-    .map((c) => app.use('/api', require('./routes/' + c)))
+// Middleware
+app.use(morgan('dev'));
+app.use(express.json({ limit: '20mb' })); // ใช้ Express JSON parser
 
-// Step 3 Router
-// app.post('/api',(req,res)=>{
-//     // code
-//     const { username,password } = req.body
-//     console.log(username,password)
+// ✅ ใช้ body-parser เฉพาะ POST และ PUT เท่านั้น
+app.use((req, res, next) => {
+  if (req.method === 'POST' || req.method === 'PUT') {
+    bodyParser.json()(req, res, next);
+  } else {
+    next();
+  }
+});
 
-// })
-// Step 2 Start Server
-app.listen(5001,
-    () => console.log('Server is running on port 5001'))
+app.use(cors());
 
+// ✅ โหลด Router อัตโนมัติจากโฟลเดอร์ routes
+readdirSync('./routes').map((file) => {
+  app.use('/api', require('./routes/' + file));
+});
 
+// ✅ ตรวจสอบว่าเซิร์ฟเวอร์ทำงานได้
+app.get('/', (req, res) => {
+  res.send('🚀 Server is running!');
+});
+
+// Step 2: Start Server
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => console.log(`🚀 Server is running on port ${PORT}`));

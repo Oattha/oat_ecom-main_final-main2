@@ -111,4 +111,7 @@ const usePersist = {
 
 const useEcomStore = create(persist(ecomStore, usePersist));
 
+
+
+
 export default useEcomStore;

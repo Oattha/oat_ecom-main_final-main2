@@ -7,7 +7,8 @@ const {
     getOrderAdmin, 
     changeOrderStatus, 
     getOrderDetail, 
-    updateTrackingNumber 
+    updateTrackingNumber,
+    getOrderTrackingAdmin 
 } = require('../controllers/admin');
 
 // API ดึงออเดอร์ทั้งหมด (มีอยู่แล้ว)
@@ -22,5 +23,7 @@ router.post('/admin/orders/:orderId', authCheck, getOrderDetail);
 // ✅ **เพิ่ม API สำหรับอัปเดต trackingNumber**
 router.put('/admin/orders/:orderId/tracking', authCheck, updateTrackingNumber);  // ฟังก์ชันนี้จะเป็นการเพิ่มข้อมูล trackingNumber และ shippingCompany
 router.post('/admin/orders/:orderId/tracking', authCheck, updateTrackingNumber);
+
+/*router.get("/admin/orders/tracking", authCheck, getOrderTrackingAdmin);*/
 
 module.exports = router;
