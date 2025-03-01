@@ -19,7 +19,7 @@ const HistoryCard = () => {
       .then((res) => {
         setOrders(res.data.orders);
         res.data.orders.forEach((order) => {
-          // เรียกฟังก์ชันเพื่อดึงเลขพัสดุและข้อมูลที่อยู่ เบอร์โทร
+          // เรียกฟังก์ชันเพื่อดึงข้อมูลการติดตาม
           fetchTrackingInfo(order.id);
         });
       })
@@ -28,20 +28,18 @@ const HistoryCard = () => {
       });
   };
 
-  // ฟังก์ชันดึงเลขพัสดุ, บริษัทขนส่ง, ที่อยู่ และเบอร์โทร
+  // ฟังก์ชันดึงข้อมูลการติดตามคำสั่งซื้อ
   const fetchTrackingInfo = async (orderId) => {
     try {
-      const res = await getOrderTracking(token, orderId);
-      setTrackingInfo((prev) => ({
-        ...prev,
-        [orderId]: {
-          trackingNumber: res.data.trackingNumber, // เก็บเลขพัสดุตาม orderId
-          shippingCompany: res.data.shippingCompany, // เก็บบริษัทขนส่งตาม orderId
-          address: res.data.address, // เก็บที่อยู่
-          phone: res.data.phone, // เก็บเบอร์โทร
-          name: res.data.name, // เก็บชื่อผู้สั่งซื้อ
-        },
-      }));
+      const res = await getOrderTracking(token); // เปลี่ยนฟังก์ชันที่เรียก API
+      const orderTracking = res.data.find(info => info.orderId === orderId); // หาข้อมูลการติดตามจากข้อมูลทั้งหมด
+
+      if (orderTracking) {
+        setTrackingInfo((prev) => ({
+          ...prev,
+          [orderId]: orderTracking, // เก็บข้อมูลการติดตามตาม orderId
+        }));
+      }
     } catch (error) {
       console.log("Error fetching tracking:", error);
     }
