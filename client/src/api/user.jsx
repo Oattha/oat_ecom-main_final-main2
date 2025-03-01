@@ -92,3 +92,31 @@ export const createOrder = (token, orderData) => {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
+
+export const uploadProfilePicture = async (token, form) => {
+  return axios.post(
+    "http://localhost:5001/api/user/upload-profile",  // URL ที่ถูกต้องสำหรับอัปโหลดรูปโปรไฟล์
+    {
+      image: form,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
+export const removeFiles = async (token, public_id) => {
+  return axios.delete(   // เปลี่ยนจาก POST เป็น DELETE สำหรับการลบ
+    "http://localhost:5001/api/user/remove-profile",  // URL สำหรับลบรูปโปรไฟล์
+    {
+      data: { public_id }, // ส่งข้อมูล public_id ด้วย
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+};
+
