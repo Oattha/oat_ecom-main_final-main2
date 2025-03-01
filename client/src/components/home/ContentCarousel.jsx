@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+/*import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import axios from "axios";
 
@@ -62,6 +62,69 @@ const ContentCarousel = () => {
             <img 
             className="rounded-md"
             src={item.download_url} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+    </div>
+  );
+};
+
+export default ContentCarousel;
+*/
+
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import { Pagination, Autoplay, Navigation } from "swiper/modules";
+
+// ใส่ URL ของรูปภาพที่ต้องการแสดง
+const images = [
+  "/images/6ep2vfdp.png",
+  "/images/i0u3l2bb.png",
+  "/images/maxresdefault (3).jpg",
+  "/images/nexon.png",
+  "/images/u8uhtv1s.png",
+  "/images/wartech.png",
+];
+
+const ContentCarousel = () => {
+  return (
+    <div>
+      <Swiper
+        pagination={true}
+        modules={[Pagination, Autoplay]}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
+        className="mySwiper h-80 object-cover rounded-md mb-4"
+      >
+        {images.map((image, i) => (
+          <SwiperSlide key={i}>
+            <img src={image} alt={`image-${i}`} className="w-full h-full object-cover" />
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      <Swiper
+        slidesPerView={5}
+        spaceBetween={10}
+        pagination={true}
+        navigation={true}
+        modules={[Pagination, Autoplay, Navigation]}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
+        className="mySwiper object-cover rounded-md"
+      >
+        {images.map((image, i) => (
+          <SwiperSlide key={i}>
+            <img className="rounded-md w-full h-full object-cover" src={image} alt={`image-${i}`} />
           </SwiperSlide>
         ))}
       </Swiper>
