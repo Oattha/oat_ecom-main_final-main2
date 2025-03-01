@@ -131,7 +131,7 @@ const Profile = () => {
         <p><strong>Name:</strong> {profile.name}</p>
         <p><strong>Email:</strong> {profile.email}</p>
         <p><strong>Phone:</strong> {profile.phone || "N/A"}</p>
-        <p><strong>Address:</strong> {profile.address || "กรอกหน้าตอนสั่งสินค้า"}</p>
+        <p><strong>Address:</strong> {profile.address}</p>
       </div>
     </div>
   );

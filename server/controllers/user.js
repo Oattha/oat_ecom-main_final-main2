@@ -358,10 +358,11 @@ exports.currentUser = async (req, res) => {
           where: { email: req.user.email },
           select: {
               id: true,
+              name: true,  // ✅ ดึง name
+              phone: true, // ✅ ดึง phone
               email: true,
               role: true,
-              name: true,
-              phone: true
+              address: true // ✅ ดึง address (ที่อยู่)
           }
       });
       res.json({ user });
@@ -369,7 +370,8 @@ exports.currentUser = async (req, res) => {
       console.log(err);
       res.status(500).json({ message: 'Server Error' });
   }
-};
+}
+
 
 
 exports.createOrderDetail = async (req, res) => {

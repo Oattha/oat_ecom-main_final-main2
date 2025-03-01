@@ -84,7 +84,8 @@ exports.currentUser = async (req, res) => {
                 name: true,  // ✅ ดึง name
                 phone: true, // ✅ ดึง phone
                 email: true,
-                role: true
+                role: true,
+                address: true // ✅ ดึง address (ที่อยู่)
             }
         });
         res.json({ user });
@@ -93,3 +94,4 @@ exports.currentUser = async (req, res) => {
         res.status(500).json({ message: 'Server Error' });
     }
 }
+
