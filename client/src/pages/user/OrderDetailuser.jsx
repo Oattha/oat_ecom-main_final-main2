@@ -1,45 +1,130 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // ใช้ useParams สำหรับการดึง orderId
-import useEcomStore from "../../store/ecom-store"; // ใช้ store สำหรับดึง token
-import { toast } from "react-toastify"; // ใช้สำหรับการแสดงข้อความเตือน
-import { getOrderTracking } from "../../api/user"; // ใช้ฟังก์ชันนี้ในการดึงข้อมูลจาก API
+import { getOrders, getOrderTracking } from "../../api/user";
+import useEcomStore from "../../store/ecom-store";
+import { dateFormat } from "../../utils/dateformat";
+import { numberFormat } from "../../utils/number";
 
-const OrderTracking = () => {
-  const { orderId } = useParams(); // ดึง orderId จาก URL
-  const token = useEcomStore((state) => state.token); // ใช้ token จาก store
-  const [tracking, setTracking] = useState(null); // สถานะของข้อมูลการติดตาม
-  const [loading, setLoading] = useState(true); // สถานะการโหลดข้อมูล
+const HistoryCard = () => {
+  const token = useEcomStore((state) => state.token);
+  const orderUpdates = useEcomStore((state) => state.orderUpdates);
+  const setOrderUpdates = useEcomStore((state) => state.setOrderUpdates);
+
+  const [orders, setOrders] = useState([]);
+  const [trackingInfo, setTrackingInfo] = useState({});
+  const [previousOrders, setPreviousOrders] = useState([]); // เก็บค่าเดิมของ orders
 
   useEffect(() => {
-    if (orderId && token) {
-      fetchOrderTracking(orderId, token); // เมื่อมี orderId และ token ให้เรียกฟังก์ชัน fetch ข้อมูลการติดตาม
-    }
-  }, [orderId, token]);
+    hdlGetOrders(token);
+  }, []);
 
-  const fetchOrderTracking = async (orderId, token) => {
+  useEffect(() => {
+    if (previousOrders.length > 0) {
+      const updatedOrders = orders.filter(
+        (newOrder) =>
+          !previousOrders.some(
+            (oldOrder) =>
+              oldOrder.id === newOrder.id &&
+              oldOrder.orderStatus === newOrder.orderStatus
+          )
+      );
+
+      if (updatedOrders.length > 0) {
+        setOrderUpdates(updatedOrders.map((order) => order.id));
+      }
+    }
+
+    setPreviousOrders(orders);
+  }, [orders]);
+
+  const hdlGetOrders = (token) => {
+    getOrders(token)
+      .then((res) => {
+        setOrders(res.data.orders);
+        fetchTrackingInfo(token);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const fetchTrackingInfo = async (token) => {
     try {
-      setLoading(true);
-      const res = await getOrderTracking(token, orderId); // เรียก API ดึงข้อมูลการติดตาม
-      setTracking(res.data); // ตั้งค่าข้อมูลการติดตามที่ได้รับ
-    } catch (err) {
-      toast.error("ไม่สามารถโหลดข้อมูลการติดตามได้");
-    } finally {
-      setLoading(false); // ปิดสถานะการโหลด
+      const res = await getOrderTracking(token);
+      const trackingData = res.data;
+      const trackingInfoObj = trackingData.reduce((acc, info) => {
+        acc[info.orderId] = info;
+        return acc;
+      }, {});
+
+      setTrackingInfo(trackingInfoObj);
+    } catch (error) {
+      console.log("Error fetching tracking:", error);
     }
   };
 
-  if (loading) return <p className="text-center">⏳ กำลังโหลดข้อมูลการติดตาม...</p>;
-  if (!tracking) return <p className="text-center text-red-500">❌ ไม่พบข้อมูลการติดตาม</p>;
-
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
-      <h2 className="text-xl font-bold text-center mb-4">ข้อมูลการติดตามออเดอร์</h2>
-      <div className="border p-4 rounded-md">
-        <p><strong>เลขพัสดุ:</strong> {tracking.trackingNumber || "ยังไม่มีเลขพัสดุ"}</p>
-        <p><strong>บริษัทขนส่ง:</strong> {tracking.shippingCompany || "ยังไม่เลือกบริษัทขนส่ง"}</p>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-bold">ประวัติการสั่งซื้อ</h1>
+      <div className="space-y-4">
+        {orders?.map((item, index) => (
+          <div key={index} className="bg-gray-100 p-4 rounded-md shadow-md">
+            <div className="flex justify-between mb-2">
+              <div>
+                <p className="text-sm">Order date</p>
+                <p className="font-bold">{dateFormat(item.updatedAt)}</p>
+              </div>
+              <div>
+                <span className="px-2 py-1 rounded-full bg-blue-200">
+                  {item.orderStatus}
+                </span>
+              </div>
+            </div>
+            <div>
+              <table className="border w-full">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th>สินค้า</th>
+                    <th>ราคา</th>
+                    <th>จำนวน</th>
+                    <th>รวม</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {item.products?.map((product, index) => (
+                    <tr key={index}>
+                      <td>{product.product.title}</td>
+                      <td>{numberFormat(product.product.price)}</td>
+                      <td>{product.count}</td>
+                      <td>
+                        {numberFormat(product.count * product.product.price)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="text-right">
+              <p>ราคาสุทธิ</p>
+              <p>{numberFormat(item.cartTotal)}</p>
+            </div>
+            <div>
+              {trackingInfo[item.id] ? (
+                <div>
+                  <p>📦 Tracking: {trackingInfo[item.id].trackingNumber}</p>
+                  <p>🚚 บริษัทขนส่ง: {trackingInfo[item.id].shippingCompany}</p>
+                  <p>🏠 ที่อยู่: {trackingInfo[item.id].address}</p>
+                  <p>📞 เบอร์โทร: {trackingInfo[item.id].phone}</p>
+                  <p>👤 ชื่อผู้สั่งซื้อ: {trackingInfo[item.id].name}</p>
+                </div>
+              ) : (
+                <p>📦 กำลังโหลดเลขพัสดุ...</p>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default OrderTracking;
+export default HistoryCard;
