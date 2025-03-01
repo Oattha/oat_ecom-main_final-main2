@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getOrders, getOrderTracking } from "../../api/user"; // เพิ่ม getOrderTracking
+import { getOrders, getOrderTracking } from "../../api/user"; // เรียกใช้ getOrderTracking
 import useEcomStore from "../../store/ecom-store";
 import { dateFormat } from "../../utils/dateformat";
 import { numberFormat } from "../../utils/number";
@@ -18,28 +18,28 @@ const HistoryCard = () => {
     getOrders(token)
       .then((res) => {
         setOrders(res.data.orders);
-        res.data.orders.forEach((order) => {
-          // เรียกฟังก์ชันเพื่อดึงข้อมูลการติดตาม
-          fetchTrackingInfo(order.id);
-        });
+        // เรียกฟังก์ชันเพื่อดึงข้อมูลการติดตามทั้งหมด
+        fetchTrackingInfo(token); // ส่ง token เพื่อดึงข้อมูลทั้งหมด
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  // ฟังก์ชันดึงข้อมูลการติดตามคำสั่งซื้อ
-  const fetchTrackingInfo = async (orderId) => {
+  // ฟังก์ชันดึงข้อมูลการติดตามคำสั่งซื้อทั้งหมด
+  const fetchTrackingInfo = async (token) => {
     try {
-      const res = await getOrderTracking(token); // เปลี่ยนฟังก์ชันที่เรียก API
-      const orderTracking = res.data.find(info => info.orderId === orderId); // หาข้อมูลการติดตามจากข้อมูลทั้งหมด
+      // ดึงข้อมูลการติดตามทั้งหมดจาก API
+      const res = await getOrderTracking(token); // เรียก API ที่ไม่ต้องส่ง orderId
+      const trackingData = res.data;
 
-      if (orderTracking) {
-        setTrackingInfo((prev) => ({
-          ...prev,
-          [orderId]: orderTracking, // เก็บข้อมูลการติดตามตาม orderId
-        }));
-      }
+      // จัดเก็บข้อมูลการติดตามใน state trackingInfo โดยใช้ orderId เป็น key
+      const trackingInfoObj = trackingData.reduce((acc, info) => {
+        acc[info.orderId] = info; // สร้าง object ที่มี key เป็น orderId และเก็บข้อมูลการติดตาม
+        return acc;
+      }, {});
+
+      setTrackingInfo(trackingInfoObj);
     } catch (error) {
       console.log("Error fetching tracking:", error);
     }

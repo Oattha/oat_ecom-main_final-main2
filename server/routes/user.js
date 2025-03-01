@@ -50,7 +50,12 @@ router.post("/order-detail/create", authCheck, createOrderDetail);
 router.get("/order-detail/:orderId", authCheck, getOrderDetailByOrderId);
 
 // เพิ่มการตรวจสอบสิทธิ์การเข้าถึงข้อมูลของออเดอร์
-router.get('/user/orders/tracking', authCheck, getOrderTracking); 
-
+router.get('/api/user/orders/tracking', authCheck, getOrderTracking); 
+// ✅ เปลี่ยนจาก '/order/:orderId/tracking' → '/orders/tracking'
+// ✅ ไม่ต้องใช้ orderId ในพารามิเตอร์ เพราะดึงจาก userId ที่ล็อกอินอยู่
+ // ✅ เพิ่มเส้นทางใหม่สำหรับการดูข้อมูล tracking
  // ต้องตรวจสอบสิทธิ์ของผู้ใช้ก่อน
+
+ router.get('/user/orders/tracking', authCheck, getOrderTracking);
+
 module.exports = router;

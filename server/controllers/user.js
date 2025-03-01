@@ -459,6 +459,7 @@ exports.getOrderDetailByOrderId = async (req, res) => {
 
 // controllers/user.js
 
+
 exports.getOrderTracking = async (req, res) => {
   try {
     console.log("🔍 req.user:", req.user); // ✅ ตรวจสอบ user id
@@ -492,4 +493,3 @@ exports.getOrderTracking = async (req, res) => {
     res.status(500).json({ message: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์" });
   }
 };
-

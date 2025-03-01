@@ -24,7 +24,7 @@ const Uploadfile = ({ form, setForm }) => {
                 // Validate
                 const file = files[i]
                 if (!file.type.startsWith('image/')) {
-                    toast.error(`File ${file.name} บ่แม่นรูป`)
+                    toast.error(`File ${file.name} "ไม่ใช่รูป`)
                     continue
                 }
                 // Image Resize 
