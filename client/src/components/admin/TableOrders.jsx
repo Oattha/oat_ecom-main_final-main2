@@ -70,35 +70,32 @@ const TableOrders = () => {
 
           <tbody>
             {orders?.map((item, index) => (
-              <tr key={item.id} className="border"> {/* ✅ ใช้ item.id เป็น key */}
+              <tr key={item.id} className="border">
                 <td className="text-center">{index + 1}</td>
                 <td>
                   <p>{item.orderedBy.name}</p>
                   <p>{item.orderedBy.phone}</p>
                   <p>{item.orderedBy.address}</p>
                 </td>
-
                 <td>{dateFormat(item.createdAt)}</td>
-
                 <td className="px-2 py-4">
                   {item.products?.map((product, index) => (
                     <li key={index}>
-                      {product.product.title} {"  "}
+                      {product.product.title}{" "}
                       <span className="text-sm">
                         {product.count} x {numberFormat(product.product.price)}
                       </span>
                     </li>
                   ))}
                 </td>
-
                 <td>{numberFormat(item.cartTotal)}</td>
-
                 <td>
-                  <span className={`${getStatusColor(item.orderStatus)} px-2 py-1 rounded-full`}>
+                  <span
+                    className={`${getStatusColor(item.orderStatus)} px-2 py-1 rounded-full`}
+                  >
                     {item.orderStatus}
                   </span>
                 </td>
-
                 <td>
                   <select
                     value={item.orderStatus}
@@ -112,8 +109,6 @@ const TableOrders = () => {
                     <option>Cancelled</option>
                   </select>
                 </td>
-
-                {/* ✅ เปลี่ยนเส้นทางให้ถูกต้อง */}
                 <td className="text-center">
                   <Link
                     to={`/admin/orders/${item.id}`} // เปลี่ยน "order" เป็น "orders"
@@ -122,10 +117,10 @@ const TableOrders = () => {
                     ดูรายละเอียด
                   </Link>
                 </td>
-
               </tr>
             ))}
           </tbody>
+
         </table>
       </div>
     </div>

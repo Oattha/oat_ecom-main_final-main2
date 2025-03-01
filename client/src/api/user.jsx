@@ -65,11 +65,12 @@ export const saveUserInfo = async (token, name, phone, address) => {
 };
 
 // ฟังก์ชันดึงข้อมูลการติดตามออเดอร์
-export const getOrderTracking = async (token, orderId) => {
-  return axios.get(`${API_URL}/order/${orderId}/tracking`, {
+export const getOrderTracking = async (token) => {
+  return axios.get(`${API_URL}/user/orders/tracking`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 };
+
 
 // ฟังก์ชันสำหรับการอัปเดตข้อมูลการจัดส่งใน OrderDetail
 

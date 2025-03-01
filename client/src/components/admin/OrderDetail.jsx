@@ -51,7 +51,7 @@ const OrderDetail = () => {
 
         // อัปเดต global store ด้วยข้อมูลใหม่
         const newOrderUpdate = { orderId, trackingNumber, shippingCompany };
-        useEcomStore.getState().setOrderUpdates(prev => [...prev, newOrderUpdate]);
+        useEcomStore.getState().updateOrderStatus(newOrderUpdate);  // เปลี่ยนที่นี่
       } else {
         toast.error(`ไม่สามารถอัปเดตเลขพัสดุได้: ${res.data.message}`);
       }
