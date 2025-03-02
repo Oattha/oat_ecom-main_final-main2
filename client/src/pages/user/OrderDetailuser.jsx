@@ -4,7 +4,7 @@ import useEcomStore from "../../store/ecom-store";
 import { dateFormat } from "../../utils/dateformat";
 import { numberFormat } from "../../utils/number";
 
-const HistoryCard = () => {
+const OrderDetailuser = () => {
   const token = useEcomStore((state) => state.token);
   const orderUpdates = useEcomStore((state) => state.orderUpdates);
   const setOrderUpdates = useEcomStore((state) => state.setOrderUpdates);
@@ -127,4 +127,4 @@ const HistoryCard = () => {
   );
 };
 
-export default HistoryCard;
+export default OrderDetailuser;
