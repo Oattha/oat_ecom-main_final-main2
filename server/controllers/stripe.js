@@ -34,7 +34,7 @@ exports.payment = async (req, res) => {
         const paymentIntent = await stripe.paymentIntents.create({
           amount: cart.cartTotal * 100,
           currency: "thb",
-          payment_method_types: ["card"],  // เพิ่มตรงนี้
+          payment_method_types: ["card","promptpay"],  // เพิ่มตรงนี้
       });
       
 

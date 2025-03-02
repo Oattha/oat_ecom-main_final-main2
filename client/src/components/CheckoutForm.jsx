@@ -64,6 +64,7 @@ export default function CheckoutForm() {
 
   const paymentElementOptions = {
     layout: "tabs",
+    paymentMethodOrder: ["card", "promptpay"],  // ✅ เรียงลำดับให้รองรับ PromptPay
   };
 
   return (
