@@ -65,7 +65,7 @@ const Dashboard = () => {
       {/* ยอดขายรวม */}
       <div className="bg-white p-4 shadow-md rounded-lg mt-4">
         <h2 className="text-lg font-semibold">ยอดขายรวม</h2>
-        <p className="text-xl font-bold">${stats.totalSales}</p>
+        <p className="text-xl font-bold">฿ {stats.totalSales}</p>
       </div>
     </div>
   );
