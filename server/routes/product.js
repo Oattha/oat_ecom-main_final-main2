@@ -26,6 +26,6 @@ router.post('/images', authCheck, adminCheck, createImages)
 router.post('/removeimages', authCheck, adminCheck, removeImage)
 
 
-router.get('/:id', getProductById); // เพิ่มเส้นทางดึงข้อมูลสินค้ารายตัว
+router.get('/product/:id', getProductById); // เพิ่มเส้นทางดึงข้อมูลสินค้ารายตัว
 
 module.exports = router
