@@ -1,36 +1,36 @@
-// rafce
 import React from "react";
 import { ShoppingCart } from "lucide-react";
 import useEcomStore from "../../store/ecom-store";
 import { numberFormat } from "../../utils/number";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ item }) => {
   const actionAddtoCart = useEcomStore((state) => state.actionAddtoCart);
-  // console.log(item)
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/product/${item.id}`); // ✅ ไปที่ ProductDetail
+  };
+
   return (
     <motion.div
-      initial={{
-        opacity: 0,
-        scale: 0.5,
-      }}
+      initial={{ opacity: 0, scale: 0.5 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="border rounded-md shadow-md p-2 w-48">
+      <div
+        className="border rounded-md shadow-md p-2 w-48 cursor-pointer hover:shadow-lg transition"
+        onClick={handleClick} // ✅ คลิกแล้วไปหน้า ProductDetail
+      >
         <div>
           {item.images && item.images.length > 0 ? (
             <img
               src={item.images[0].url}
-              className="rounded-md w-full h-24 object-cover 
-                        hover:scale-110 hover:duration-200"
+              className="rounded-md w-full h-24 object-cover hover:scale-110 transition"
             />
           ) : (
-            <div
-              className="w-full h-24 bg-gray-200 rounded-md
-                    text-center flex items-center justify-center shadow
-                    "
-            >
+            <div className="w-full h-24 bg-gray-200 rounded-md flex items-center justify-center shadow">
               No Image
             </div>
           )}
@@ -44,10 +44,11 @@ const ProductCard = ({ item }) => {
         <div className="flex justify-between items-center">
           <span className="text-sm font-bold">{numberFormat(item.price)}</span>
           <button
-            onClick={() => actionAddtoCart(item)}
-            className="bg-blue-500 rounded-md
-                p-2 hover:bg-blue-700 shadow-md 
-                "
+            onClick={(e) => {
+              e.stopPropagation(); // ✅ ป้องกันการกดปุ่มแล้วเปลี่ยนหน้า
+              actionAddtoCart(item);
+            }}
+            className="bg-blue-500 rounded-md p-2 hover:bg-blue-700 shadow-md"
           >
             <ShoppingCart />
           </button>

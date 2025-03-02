@@ -9,7 +9,8 @@ const { create,
     listby,
     searchFilters,
     createImages,
-    removeImage
+    removeImage,
+    getProductById
 } = require('../controllers/product')
 const { authCheck, adminCheck } = require('../middlewares/authCheck')
 // @ENDPOINT http://localhost:5001/api/product
@@ -25,6 +26,6 @@ router.post('/images', authCheck, adminCheck, createImages)
 router.post('/removeimages', authCheck, adminCheck, removeImage)
 
 
-
+router.get('/:id', getProductById); // เพิ่มเส้นทางดึงข้อมูลสินค้ารายตัว
 
 module.exports = router
