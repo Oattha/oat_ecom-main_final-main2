@@ -6,32 +6,39 @@ import { SwiperSlide } from "swiper/react";
 
 const NewProduct = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // code
     loadData();
   }, []);
 
-  const loadData = () => {
-    listProductBy("updatedAt", "desc", 12)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const loadData = async () => {
+    try {
+      const res = await listProductBy("updatedAt", "desc", 12);
+      setData(res.data);
+    } catch (err) {
+      console.error("Error fetching new products:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  console.log(data);
-
   return (
-    <SwiperShowProduct>
-      {data?.map((item, index) => (
-        <SwiperSlide>
-          <ProductCard item={item} key={index} />
-        </SwiperSlide>
-      ))}
-    </SwiperShowProduct>
+    <div className="max-w-6xl mx-auto">
+      {loading ? (
+        <div className="flex justify-center items-center min-h-[200px]">
+          <p className="text-gray-500 text-lg">⏳ กำลังโหลดสินค้าใหม่...</p>
+        </div>
+      ) : (
+        <SwiperShowProduct>
+          {data?.map((item) => (
+            <SwiperSlide key={item.id}>
+              <ProductCard item={item} />
+            </SwiperSlide>
+          ))}
+        </SwiperShowProduct>
+      )}
+    </div>
   );
 };
 
