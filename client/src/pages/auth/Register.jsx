@@ -14,6 +14,7 @@ const registerSchema = z
     email: z.string().email({ message: "Invalid email!!!" }),
     password: z.string().min(8, { message: "Password ต้องมากกว่า 8 ตัวอักษร" }),
     confirmPassword: z.string(),
+    address: z.string().min(5, { message: "กรุณากรอกที่อยู่ (อย่างน้อย 5 ตัวอักษร)" }), // ✅ เพิ่มที่อยู่
     role: z.enum(["user", "admin"]),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -42,15 +43,15 @@ const Register = () => {
   const onSubmit = async (data) => {
     try {
       await axios.post("http://localhost:5001/api/register", data);
-      
+
       toast.success("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
-  
+
       navigate("/login"); // ✅ ไปที่หน้าล็อกอินแทน
     } catch (err) {
       toast.error(err.response?.data?.message || "เกิดข้อผิดพลาด");
     }
   };
-  
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-200 to-purple-300">
@@ -104,6 +105,15 @@ const Register = () => {
               className={`w-full px-4 py-3 border rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.phone && "border-red-500"}`}
             />
             {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
+          </div>
+          <div>
+            
+            <input
+              {...register("address")}
+              placeholder="ที่อยู่"
+              className={`w-full px-4 py-3 border rounded-lg shadow-sm text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none ${errors.address && "border-red-500"}`}
+            />
+            {errors.address && <p className="text-red-500 text-sm">{errors.address.message}</p>}
           </div>
 
           <div>
