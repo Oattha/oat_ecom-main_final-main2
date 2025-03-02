@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useEcomStore from "../store/ecom-store";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ShoppingCart, User } from "lucide-react";
 
 function MainNav() {
-  // Javascript
   const carts = useEcomStore((s) => s.carts);
   const user = useEcomStore((s) => s.user);
   const logout = useEcomStore((s) => s.logout);
-  const orderUpdates = useEcomStore((s) => s.orderUpdates); // ใช้ orderUpdates จาก store
+  const orderUpdates = useEcomStore((s) => s.orderUpdates);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -17,19 +16,19 @@ function MainNav() {
   };
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="mx-auto px-4">
-        <div className="flex justify-between h-16">
+    <nav className="bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg text-white">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between h-16 items-center">
           <div className="flex items-center gap-6">
-            <Link to={"/"} className="text-2xl font-bold">
+            <Link to={"/"} className="text-2xl font-bold tracking-wide">
               Oat-Ecom
             </Link>
 
             <NavLink
               className={({ isActive }) =>
-                isActive
-                  ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                  : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium "
+                `px-4 py-2 rounded-lg transition-all duration-300 ${
+                  isActive ? "bg-white text-gray-800" : "hover:bg-white hover:text-gray-800"
+                }`
               }
               to={"/"}
             >
@@ -38,9 +37,9 @@ function MainNav() {
 
             <NavLink
               className={({ isActive }) =>
-                isActive
-                  ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                  : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium "
+                `px-4 py-2 rounded-lg transition-all duration-300 ${
+                  isActive ? "bg-white text-gray-800" : "hover:bg-white hover:text-gray-800"
+                }`
               }
               to={"/shop"}
             >
@@ -49,99 +48,95 @@ function MainNav() {
 
             <NavLink
               className={({ isActive }) =>
-                isActive
-                  ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                  : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium "
+                `relative px-4 py-2 rounded-lg transition-all duration-300 ${
+                  isActive ? "bg-white text-gray-800" : "hover:bg-white hover:text-gray-800"
+                }`
               }
               to={"/cart"}
             >
-              Cart
+              <ShoppingCart size={20} />
               {carts.length > 0 && (
-                <span className="absolute top-0 bg-red-500 rounded-full px-2">
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2">
                   {carts.length}
                 </span>
               )}
             </NavLink>
 
-            {/* ปุ่มสำหรับแสดง Order Details */}
             {user && (
               <NavLink
                 className={({ isActive }) =>
-                  isActive
-                    ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                    : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium"
+                  `relative px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isActive ? "bg-white text-gray-800" : "hover:bg-white hover:text-gray-800"
+                  }`
                 }
-                to="/user/order-details" // ✅ เพิ่ม path สำหรับ Order Details
+                to="/user/order-details"
               >
-                Order Details
+                Orders
                 {orderUpdates.length > 0 && (
-                  <span className="absolute top-0 right-0 bg-red-500 rounded-full px-2">
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2">
                     {orderUpdates.length}
                   </span>
                 )}
               </NavLink>
             )}
 
-            {/* เพิ่มปุ่ม "ติดต่อเรา" */}
             <NavLink
               className={({ isActive }) =>
-                isActive
-                  ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                  : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium "
+                `px-4 py-2 rounded-lg transition-all duration-300 ${
+                  isActive ? "bg-white text-gray-800" : "hover:bg-white hover:text-gray-800"
+                }`
               }
-              to="/contact-us" // เพิ่ม path สำหรับหน้า Contact Us
+              to="/contact-us"
             >
               ติดต่อเรา
             </NavLink>
           </div>
 
           {user ? (
-            <div className="flex items-center gap-4">
+            <div className="relative">
               <button
                 onClick={toggleDropdown}
-                className="flex items-center gap-2 hover:bg-gray-200 px-2 py-3 rounded-md"
+                className="flex items-center gap-2 bg-white text-gray-800 px-3 py-2 rounded-lg hover:bg-gray-200 transition-all"
               >
-                <img
-                  className="w-8 h-8 rounded-full"
-                  src="https://cdn.iconscout.com/icon/free/png-512/free-avatar-icon-download-in-svg-png-gif-file-formats--user-professor-avatars-flat-icons-pack-people-456317.png?f=webp&w=256"
-                  alt="Profile"
-                />
+                <User size={20} />
                 <ChevronDown />
               </button>
 
               {isOpen && (
-                <div className="absolute top-16 bg-white shadow-md z-50">
-                  <Link
-                    to={"/user/profile"}
-                    className="block px-4 py-2 hover:bg-gray-200"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to={"/user/history"}
-                    className="block px-4 py-2 hover:bg-gray-200"
-                  >
-                    History
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      setIsOpen(false); // ปิด dropdown หลังจาก logout
-                    }}
-                    className="block px-4 py-2 hover:bg-gray-200"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+  <div className="absolute right-0 top-full mt-2 w-48 bg-white shadow-lg rounded-lg overflow-hidden z-50">
+    <Link
+      to={"/user/profile"}
+      className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+    >
+      Profile
+    </Link>
+    <Link
+      to={"/user/history"}
+      className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+    >
+      History
+    </Link>
+    <button
+      onClick={() => {
+        logout();
+        setIsOpen(false);
+      }}
+      className="block px-4 py-2 w-full text-left text-gray-800 hover:bg-gray-200"
+    >
+      Logout
+    </button>
+  </div>
+)}
+
+
             </div>
           ) : (
             <div className="flex items-center gap-4">
               <NavLink
                 className={({ isActive }) =>
-                  isActive
-                    ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                    : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium "
+                  `px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isActive ? "bg-white text-gray-800" : "hover:bg-white hover:text-gray-800"
+                  }`
                 }
                 to={"/register"}
               >
@@ -150,9 +145,9 @@ function MainNav() {
 
               <NavLink
                 className={({ isActive }) =>
-                  isActive
-                    ? "bg-gray-200 px-3 py-2 rounded-md text-sm font-medium"
-                    : "hover:bg-slate-200 px-3 py-2 rounded-md text-sm font-medium "
+                  `px-4 py-2 rounded-lg transition-all duration-300 ${
+                    isActive ? "bg-white text-gray-800" : "hover:bg-white hover:text-gray-800"
+                  }`
                 }
                 to={"/login"}
               >
