@@ -26,6 +26,7 @@ import { OrderDetail } from '../components/admin/OrderDetail';
 import OrderDetailuser from '../pages/user/OrderDetailuser';  // แก้เป็นเส้นทางใหม่
 import Shipping from '../pages/user/shipping';
 import ContactUs from '../pages/ContactUs'; // นำเข้าหน้า ContactUs
+import ProductDetail from "../pages/ProductDetail"; // ✅ นำเข้า ProductDetail
  // ใช้เส้นทางนี้แทน
  // ✅ เพิ่ม import สำหรับ OrderDetailUser
 
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
             { path: 'login', element: <Login /> },
             { path: 'register', element: <Register /> },
             { path: 'contact-us', element: <ContactUs /> }, // เพิ่มเส้นทางสำหรับ Contact Us
+            { path: 'product/:id',element: <ProductDetail />}
         ]
     },
     {
