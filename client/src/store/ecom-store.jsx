@@ -12,6 +12,8 @@ const ecomStore = (set, get) => ({
   products: [],
   carts: [],
   orderUpdates: [],  // เพิ่มสถานะสำหรับเก็บการอัปเดตการสั่งซื้อ
+  user: JSON.parse(localStorage.getItem("ecom-store"))?.user || null,
+  token: JSON.parse(localStorage.getItem("ecom-store"))?.token || null,
 
   // ฟังก์ชันสำหรับออกจากระบบ
   logout: () => {

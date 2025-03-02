@@ -101,7 +101,7 @@ const ContentCarousel = () => {
           delay: 2500,
           disableOnInteraction: false,
         }}
-        className="mySwiper h-80 object-cover rounded-md mb-4"
+        className="mySwiper h-60 object-cover rounded-md mb-4"
       >
         {images.map((image, i) => (
           <SwiperSlide key={i}>
@@ -120,7 +120,7 @@ const ContentCarousel = () => {
           delay: 2500,
           disableOnInteraction: false,
         }}
-        className="mySwiper object-cover rounded-md"
+        className="w-full h-20 object-cover rounded-md transition-all duration-300 hover:scale-110 shadow-md"
       >
         {images.map((image, i) => (
           <SwiperSlide key={i}>

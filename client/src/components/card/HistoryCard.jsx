@@ -11,7 +11,7 @@ const HistoryCard = () => {
 
   const [orders, setOrders] = useState([]);
   const [trackingInfo, setTrackingInfo] = useState({});
-  const [previousOrders, setPreviousOrders] = useState([]); // เก็บค่าเดิมของ orders
+  const [previousOrders, setPreviousOrders] = useState([]);
 
   useEffect(() => {
     hdlGetOrders(token);
@@ -39,7 +39,10 @@ const HistoryCard = () => {
   const hdlGetOrders = (token) => {
     getOrders(token)
       .then((res) => {
-        setOrders(res.data.orders);
+        const sortedOrders = res.data.orders.sort(
+          (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+        ); // เรียงจากใหม่ → เก่า
+        setOrders(sortedOrders);
         fetchTrackingInfo(token);
       })
       .catch((err) => {
