@@ -77,21 +77,26 @@ exports.login = async (req, res) => {
 
 exports.currentUser = async (req, res) => {
     try {
+        console.log("🔹 req.user:", req.user); // ➜ ดูว่า req.user มีค่าไหม
+        if (!req.user || !req.user.email) {
+            return res.status(400).json({ message: "User not found in request" });
+        }
+  
         const user = await prisma.user.findFirst({
             where: { email: req.user.email },
-            select: {
-                id: true,
-                name: true,  // ✅ ดึง name
-                phone: true, // ✅ ดึง phone
-                email: true,
-                role: true,
-                address: true // ✅ ดึง address (ที่อยู่)
-            }
+            select: { id: true, name: true, phone: true, email: true, role: true, address: true }
         });
+  
+        if (!user) {
+            return res.status(404).json({ message: "User not found in database" });
+        }
+  
         res.json({ user });
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: 'Server Error' });
+        console.log("❌ Error fetching current user:", err);
+        res.status(500).json({ message: 'Internal server error', error: err });
     }
-}
+  };
+  
+
 
