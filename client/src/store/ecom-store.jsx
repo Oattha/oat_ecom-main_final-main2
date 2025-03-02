@@ -22,6 +22,7 @@ const ecomStore = (set, get) => ({
       products: [],
       carts: [],
       orderUpdates: [],  // ล้างข้อมูลการอัปเดต
+      setOrderUpdates: (updates) => set((state) => ({ orderUpdates: updates })),
     });
     // ลบข้อมูลที่เก็บใน localStorage
     localStorage.removeItem("ecom-store");
@@ -126,7 +127,7 @@ const usePersist = {
 };
 
 // สร้าง store ที่ใช้ Zustand และ middleware สำหรับ persist
-const useEcomStore = create(persist(ecomStore, usePersist));
+const useEcomStore = create(persist(ecomStore, usePersist,));
 
 // ตรวจสอบข้อมูลใน localStorage เมื่อแอปโหลด
 useEcomStore.subscribe((state) => {
@@ -136,5 +137,7 @@ useEcomStore.subscribe((state) => {
     console.log("No user data found in store.");
   }
 });
+
+
 
 export default useEcomStore;
