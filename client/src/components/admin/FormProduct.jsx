@@ -74,139 +74,93 @@ const FormProduct = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-white shadow-md">
-      <form onSubmit={handleSubmit}>
-        <h1>เพิ่มข้อมูลสินค้า</h1>
-        <input
-          className="border"
-          value={form.title}
-          onChange={handleOnChange}
-          placeholder="Title"
-          name="title"
-        />
-        <input
-          className="border"
-          value={form.description}
-          onChange={handleOnChange}
-          placeholder="Description"
-          name="description"
-        />
-        <input
-          type="number"
-          className="border"
-          value={form.price}
-          onChange={handleOnChange}
-          placeholder="price"
-          name="price"
-        />
-        <input
-          type="number"
-          className="border"
-          value={form.quantity}
-          onChange={handleOnChange}
-          placeholder="quantity"
-          name="quantity"
-        />
-        <select
-          className="border"
-          name="categoryId"
-          onChange={handleOnChange}
-          required
-          value={form.categoryId}
-        >
-          <option value="" disabled>
-            Please Select
-          </option>
-          {categories.map((item, index) => (
-            <option key={index} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
-        <hr />
-        {/* Upload file  */}
-        <Uploadfile form={form} setForm={setForm} />
+<div className="container mx-auto p-4 bg-white shadow-md">
+  <form onSubmit={handleSubmit}>
+    <h2 className="text-lg font-semibold mb-2">เพิ่มข้อมูลสินค้า</h2>
 
-        <button
-          className="bg-blue-500 p-2 rounded-md shadow-md 
-                hover:scale-105 hover:-translate-y-1 hover:duration-200
-                "
-        >
-          เพิ่มสินค้า
+    <input className="border w-full p-1 text-sm" value={form.title} onChange={handleOnChange} placeholder="Title" name="title" />
+
+    <textarea className="border w-full p-1 text-sm mt-2" value={form.description} onChange={handleOnChange} placeholder="Description" name="description" />
+
+    {/* ✅ เพิ่ม label สำหรับ price */}
+    <label className="block font-medium mt-2">ราคา</label>
+    <input type="number" className="border w-full p-1 text-sm" value={form.price} onChange={handleOnChange} placeholder="price" name="price" />
+
+    {/* ✅ เพิ่ม label สำหรับ quantity */}
+    <label className="block font-medium mt-2">จำนวน</label>
+    <input type="number" className="border w-full p-1 text-sm" value={form.quantity} onChange={handleOnChange} placeholder="quantity" name="quantity" />
+
+    <label className="block font-medium mt-2">หมวดหมู่</label>
+    <select className="border w-full p-1 text-sm" name="categoryId" onChange={handleOnChange} required value={form.categoryId}>
+      <option value="" disabled>กรุณาเลือกหมวดหมู่</option>
+      {categories.map((item, index) => (
+        <option key={index} value={item.id}>{item.name}</option>
+      ))}
+    </select>
+
+    <hr />
+    <Uploadfile form={form} setForm={setForm} />
+    <button className="bg-blue-500 p-2 w-32 rounded-md shadow-md hover:scale-105 hover:-translate-y-1 hover:duration-200">
+      เพิ่มสินค้า
+    </button>
+    <hr />
+    <br />
+
+    {/* ✅ ทำให้ตาราง Responsive */}
+    <div className="overflow-auto max-w-full">
+      <table className="table w-full border">
+        <thead>
+          <tr className="bg-gray-200 border">
+            <th>No.</th>
+            <th>รูปภาพ</th>
+            <th>ชื่อสินค้า</th>
+            <th className="w-64">รายละเอียด</th> {/* ✅ กำหนดความกว้างของคอลัมน์ */}
+            <th>ราคา</th>
+            <th>คงเหลือ</th>
+            <th>ขายได้</th>
+            <th>วันที่อัปเดต</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody className="text-base"> {/* เพิ่ม text-base เพื่อขยายขนาดข้อความ */}
+  {products.map((item, index) => (
+    <tr key={index} className="border-b">
+      <th className="p-3">{index + 1}</th>
+      <td className="p-3">
+        {item.images.length > 0 ? (
+          <img className="w-20 h-20 rounded-lg shadow-md" src={item.images[0].url} />
+        ) : (
+          <div className="w-20 h-20 bg-gray-300 rounded-md flex items-center justify-center shadow-sm">No Image</div>
+        )}
+      </td>
+      <td className="p-3">{item.title}</td>
+
+      {/* ✅ ตัดข้อความยาว + tooltip */}
+      <td className="max-w-sm truncate hover:overflow-visible hover:whitespace-normal relative p-3">
+        <span className="block truncate w-72" title={item.description}>{item.description}</span>
+      </td>
+
+      <td className="p-3">{numberFormat(item.price)}</td>
+      <td className="p-3">{item.quantity}</td>
+      <td className="p-3">{item.sold}</td>
+      <td className="p-3">{dateFormat(item.updatedAt)}</td>
+      <td className="flex gap-2 p-3">
+        <Link to={`/admin/product/${item.id}`} className="bg-yellow-500 p-2 rounded-md shadow-md hover:scale-105">
+          <Pencil />
+        </Link>
+        <button className="bg-red-500 p-2 rounded-md shadow-md hover:scale-105" onClick={() => handleDelete(item.id)}>
+          <Trash />
         </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
 
-        <hr />
-        <br />
-        <table className="table w-full border">
-          <thead>
-            <tr className="bg-gray-200 border">
-              <th scope="col">No.</th>
-              <th scope="col">รูปภาพ</th>
-              <th scope="col">ชื่อสินค้า</th>
-              <th scope="col">รายละเอียด</th>
-              <th scope="col">ราคา</th>
-              <th scope="col">จำนวน</th>
-              <th scope="col">จำนวนที่ขายได้</th>
-              <th scope="col">วันที่อัปเดต</th>
-              <th scope="col">จัดการ</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((item, index) => {
-              // console.log(item)
-              return (
-                <tr key={index}>
-                  <th scope="row">{index + 1}</th>
-
-                  <td>
-                    {item.images.length > 0 ? (
-                      <img
-                        className="w-24 h-24 rounded-lg shadow-md"
-                        src={item.images[0].url}
-                      />
-                    ) : (
-                      <div
-                        className="w-24 h-24 bg-gray-200 rounded-md 
-                                                    flex items-center justify-center shadow-sm"
-                      >
-                        No Image
-                      </div>
-                    )}
-                  </td>
-
-                  <td>{item.title}</td>
-                  <td>{item.description}</td>
-                  <td>{numberFormat(item.price)}</td>
-                  <td>{item.quantity}</td>
-                  <td>{item.sold}</td>
-                  <td>{dateFormat(item.updatedAt)}</td>
-                  <td className="flex gap-2">
-                    <p
-                      className="bg-yellow-500 rounded-md p-1 
-                                            hover:scale-105 hover:-translate-y-1 hover:duration-200
-                                            shadow-md"
-                    >
-                      <Link to={"/admin/product/" + item.id}>
-                        <Pencil />
-                      </Link>
-                    </p>
-
-                    <p
-                      className="bg-red-500 rounded-md p-1 shadow-md
-                                                hover:scale-105 hover:-translate-y-1 hover:duration-200
-                                                "
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      <Trash />
-                    </p>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </form>
+      </table>
     </div>
+  </form>
+</div>
+
   );
 };
 
