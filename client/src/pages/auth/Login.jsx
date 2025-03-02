@@ -1,99 +1,82 @@
-// rafce
-import React, { useState, useEffect } from "react"; // ✅ เพิ่ม useEffect
-import axios from "axios";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import useEcomStore from "../../store/ecom-store";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  // Javascript
   const navigate = useNavigate();
   const actionLogin = useEcomStore((state) => state.actionLogin);
-  const user = useEcomStore((state) => state.user);
-  const logout = useEcomStore((state) => state.logout); // ✅ เรียก logout
+  const logout = useEcomStore((state) => state.logout);
 
-  console.log("user form zustand", user);
+  const [form, setForm] = useState({ email: "", password: "" });
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  // ✅ ใช้ useEffect เพื่อล้าง user ทุกครั้งที่เข้าหน้า Login
   useEffect(() => {
-    logout(); // ล้าง user และ token ที่อาจยังค้างอยู่
+    logout(); // ล้างข้อมูลผู้ใช้ที่อาจค้างอยู่
   }, []);
 
   const handleOnChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await actionLogin(form);
-      const role = res.data.payload.role;
-      const token = res.data.token;  // สมมติว่า token มาในรูปนี้
-      localStorage.setItem('token', token);  // บันทึก token ใน localStorage
-      roleRedirect(role);
+      localStorage.setItem("token", res.data.token);
+      roleRedirect(res.data.payload.role);
       toast.success("Welcome Back");
     } catch (err) {
-      console.log(err);
-      const errMsg = err.response?.data?.message;
-      toast.error(errMsg);
+      toast.error(err.response?.data?.message || "Login failed");
     }
   };
-  
 
   const roleRedirect = (role) => {
     if (role === "admin") {
       navigate("/admin");
     } else {
-      navigate(-1);
+      navigate("/"); // ✅ ให้ไปหน้าหลักแทนการย้อนกลับ
     }
   };
+  
 
   return (
-    <div
-      className="min-h-screen flex 
-  items-center justify-center bg-gray-100"
-    >
-      <div className="w-full shadow-md bg-white p-8 max-w-md">
-        <h1 className="text-2xl text-center my-4 font-bold">Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-200 to-purple-300">
+      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl">
+        <h1 className="text-3xl font-extrabold text-center text-gray-800">Login</h1>
+        <p className="text-gray-500 text-center mt-1">เข้าสู่ระบบเพื่อใช้งาน</p>
 
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+          <div>
             <input
               placeholder="Email"
-              className="border w-full px-3 py-2 rounded
-            focus:outline-none focus:ring-2 focus:ring-blue-500
-            focus:border-transparent"
+              className="w-full px-4 py-3 border rounded-lg shadow-sm text-gray-700
+                         focus:ring-2 focus:ring-blue-500 focus:outline-none"
               onChange={handleOnChange}
               name="email"
               type="email"
+              required
             />
+          </div>
 
+          <div>
             <input
               placeholder="Password"
-              className="border w-full px-3 py-2 rounded
-                    focus:outline-none focus:ring-2 focus:ring-blue-500
-                    focus:border-transparent"
+              className="w-full px-4 py-3 border rounded-lg shadow-sm text-gray-700
+                         focus:ring-2 focus:ring-blue-500 focus:outline-none"
               onChange={handleOnChange}
               name="password"
               type="password"
+              required
             />
-            <button
-              className="bg-blue-500 rounded-md
-             w-full text-white font-bold py-2 shadow
-             hover:bg-blue-700
-             "
-            >
-              Login
-            </button>
           </div>
+
+          <button
+            className="w-full py-3 text-white font-bold rounded-lg shadow-md
+                       bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600
+                       transition duration-300 transform hover:scale-105"
+          >
+            Login
+          </button>
         </form>
       </div>
     </div>
