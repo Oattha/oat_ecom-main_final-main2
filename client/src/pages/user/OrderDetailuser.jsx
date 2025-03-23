@@ -71,7 +71,7 @@ const HistoryCard = () => {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">ประวัติการสั่งซื้อ</h1>
+      <h1 className="text-2xl font-bold">รายการสั่งซื้อ</h1>
       <div className="space-y-4">
         {orders?.map((item, index) => {
           const isUpdated = orderUpdates.includes(item.id); // เช็คว่ามีการเปลี่ยนแปลงหรือไม่

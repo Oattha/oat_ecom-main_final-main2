@@ -23,6 +23,11 @@ const BestSeller = () => {
     }
   };
 
+  const getMedal = (index) => {
+    const medals = ["🥇", "🥈", "🥉"];
+    return index < 3 ? medals[index] : null;
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       {loading ? (
@@ -31,8 +36,9 @@ const BestSeller = () => {
         </div>
       ) : (
         <SwiperShowProduct>
-          {data?.map((item) => (
-            <SwiperSlide key={item.id}>
+          {data?.map((item, index) => (
+            <SwiperSlide key={item.id} className="relative">
+              <div className="absolute top-2 left-2 text-2xl font-bold">{getMedal(index)}</div>
               <ProductCard item={item} />
             </SwiperSlide>
           ))}

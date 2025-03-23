@@ -114,7 +114,7 @@ const TableOrders = () => {
                     to={`/admin/orders/${item.id}`} // เปลี่ยน "order" เป็น "orders"
                     className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                   >
-                    ดูรายละเอียด
+                    จัดการการจัดส่ง
                   </Link>
                 </td>
               </tr>

@@ -41,16 +41,22 @@ const Register = () => {
   }, [watch("password")]);
 
   const onSubmit = async (data) => {
+    if (data.role === "admin") {
+      toast.error("โปรดติดต่อเราเพื่อสมัครเป็น Admin ❌");
+      return; // ❌ หยุดการสมัคร
+    }
+
     try {
       await axios.post("http://localhost:5001/api/register", data);
 
       toast.success("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
 
-      navigate("/login"); // ✅ ไปที่หน้าล็อกอินแทน
+      navigate("/login");
     } catch (err) {
       toast.error(err.response?.data?.message || "เกิดข้อผิดพลาด");
     }
   };
+
 
 
   return (
@@ -107,7 +113,7 @@ const Register = () => {
             {errors.phone && <p className="text-red-500 text-sm">{errors.phone.message}</p>}
           </div>
           <div>
-            
+
             <input
               {...register("address")}
               placeholder="ที่อยู่"
@@ -123,6 +129,7 @@ const Register = () => {
               <option value="admin">Admin</option>
             </select>
           </div>
+
 
           <button className="w-full py-3 text-white font-bold rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition duration-300 transform hover:scale-105">
             Register
