@@ -14,3 +14,11 @@ export const currentAdmin = async (token) => {
         }
     })
 }
+
+// ✅ เพิ่มฟังก์ชันสำหรับ Google Login
+export const googlelogin = async (token) => 
+    await axios.post('http://localhost:5001/auth/googlelogin', {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });

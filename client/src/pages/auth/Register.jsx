@@ -57,6 +57,10 @@ const Register = () => {
     }
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:5001/auth/google"; // ✅ ไป Google Login
+  };
+  
 
 
   return (
@@ -129,6 +133,14 @@ const Register = () => {
               <option value="admin">Admin</option>
             </select>
           </div>
+
+          <button
+  type="button"
+  onClick={handleGoogleLogin}
+  className="w-full py-3 text-white font-bold rounded-lg shadow-md bg-red-500 hover:bg-red-600 transition duration-300 transform hover:scale-105"
+>
+  Sign in with Google
+</button>
 
 
           <button className="w-full py-3 text-white font-bold rounded-lg shadow-md bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition duration-300 transform hover:scale-105">

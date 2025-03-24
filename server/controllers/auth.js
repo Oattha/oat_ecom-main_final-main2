@@ -102,3 +102,68 @@ exports.currentUser = async (req, res) => {
   
 
 
+  exports.currentUserGoogle = async (req, res) => {
+    try {
+        console.log("🔹 req.user (Google):", req.user); // 🔥 Debug
+
+        if (!req.user || !req.user.email) {
+            return res.status(400).json({ message: "User not found in request" });
+        }
+
+        const user = await prisma.user.findFirst({
+            where: { email: req.user.email },
+            select: { id: true, name: true, role: true }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found in database" });
+        }
+
+        console.log("✅ Found User (Google):", user); // 🔥 Debug
+        res.json(user);
+    } catch (err) {
+        console.error("❌ Error fetching Google user:", err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+exports.googlelogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await prisma.user.findFirst({
+            where: { email: email }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User Not Found' });
+        }
+
+        // ✅ ถ้า user มาจาก Google ไม่ต้องเช็ค password
+        if (user.password) {
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(400).json({ message: 'Password Invalid!' });
+            }
+        }
+
+        const payload = {
+            id: user.id,
+            email: user.email,
+            role: user.role
+        };
+
+        const SECRET_KEY = process.env.SECRET || "defaultsecret";
+
+        jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' }, (err, token) => {
+            if (err) {
+                return res.status(500).json({ message: "Server Error" });
+            }
+            res.json({ user, token });
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
