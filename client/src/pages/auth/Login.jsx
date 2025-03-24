@@ -10,7 +10,7 @@ const Login = () => {
   const actionLogin = useEcomStore((state) => state.actionLogin);
   const [form, setForm] = useState({ email: "", password: "" });
 
-  // ✅ ตรวจจับ token จาก Google OAuth และล็อกอินอัตโนมัติ
+  // ตรวจจับ token จาก Google OAuth และล็อกอินอัตโนมัติ
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
@@ -20,34 +20,31 @@ const Login = () => {
         localStorage.setItem("token", token);
         navigate("/"); // เปลี่ยนเส้นทางไปหน้าหลัก
     }
-}, []);
+  }, []);
 
-
-
-  // ✅ ฟังก์ชันอัพเดตฟอร์มเมื่อกรอกข้อมูล
+  // ฟังก์ชันอัพเดตฟอร์มเมื่อกรอกข้อมูล
   const handleOnChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ ฟังก์ชันล็อกอินปกติ
+  // ฟังก์ชันล็อกอินปกติ
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await actionLogin(form);
       
-      // ✅ บันทึก token และข้อมูลผู้ใช้
+      // บันทึก token และข้อมูลผู้ใช้
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
   
-      // ✅ โหลดข้อมูลผู้ใช้ และนำไปยังหน้าแดชบอร์ด
+      // โหลดข้อมูลผู้ใช้ และนำไปยังหน้าแดชบอร์ด
       fetchUser(res.data.token);
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     }
   };
-  
 
-  // ✅ ฟังก์ชันดึงข้อมูลผู้ใช้จาก token
+  // ฟังก์ชันดึงข้อมูลผู้ใช้จาก token
   const fetchUser = async (token, isGoogle = false) => {
     try {
       console.log("🔍 Fetching user with token:", token);
@@ -56,12 +53,12 @@ const Login = () => {
   
       console.log("✅ User fetched:", res.data);
   
-      // ✅ บันทึก user ลงใน localStorage และเปลี่ยนเส้นทาง
-      localStorage.setItem("user", JSON.stringify(res.data));
-      toast.success(`Welcome ${res.data.email}`);
+      // บันทึก user ลงใน localStorage และเปลี่ยนเส้นทาง
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      toast.success(`Welcome ${res.data.user.email}`);
   
-      // ✅ เปลี่ยนเส้นทางไปยังแดชบอร์ด
-      navigate("/");
+      // ฟังก์ชัน roleRedirect เพื่อตรวจสอบ role และเปลี่ยนเส้นทาง
+      roleRedirect(res.data.user.role); // ตรวจสอบการเรียกใช้งานฟังก์ชันนี้
     } catch (err) {
       console.error("❌ Authentication Failed:", err.response?.data || err);
       toast.error("User Authentication failed");
@@ -70,8 +67,18 @@ const Login = () => {
     }
   };
   
+  const roleRedirect = (role) => {
+    console.log("🚀 Redirecting user with role:", role); // เพิ่มการล็อกที่นี่
+    if (role === "admin") {
+      navigate("/admin"); // ถ้าเป็น admin ส่งไปยังหน้า /admin
+    } else {
+      navigate("/"); // ถ้าเป็น user ส่งไปยังหน้า home หรือหน้าอื่นๆ
+    }
+  };
+  
 
-  // ✅ ฟังก์ชันล็อกอินผ่าน Google OAuth
+
+  // ฟังก์ชันล็อกอินผ่าน Google OAuth
   const handleGoogleLogin = () => {
     window.location.href = "http://localhost:5001/auth/google";
   };
